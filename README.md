@@ -1,4 +1,4 @@
-# DGSV
+# RVS
 ## Computer Science Independent Study Project:
 Real Time Data Generation, Server Upload and Visualization
 
