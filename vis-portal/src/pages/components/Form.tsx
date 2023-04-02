@@ -73,11 +73,11 @@ const Form = () => {
         </div>
       </div>
       {submit &&
-        <div id="visualization" className="w-1/2 h-full">
-          <Card className="w-full h-full rounded-none">
+        <div id="visualization" className="w-2/5 h-3/4 m-auto">
+          <Card className="w-full h-full bg-gray-200 shadow-none">
             <Title>Biology Grades</Title>
             <DonutChart
-              className="mt-6 h-1/2 w-1/2 m-auto"
+              className="mt-6 h-2/3 w-2/3 m-auto"
               data={data}
               category="score"
               index="id"
