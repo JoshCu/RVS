@@ -55,7 +55,7 @@ prepare-commit-msg is run when you open up the commit file (you may or may not d
 
 These use the commitlint cli tool and Just. Install this via your node package manager.
 
-####Just
+#### Just
 To install Just to ~/bin:
 ```bash 
 # cVreate ~/bin
@@ -73,7 +73,7 @@ export PATH="$PATH:$HOME/bin"
 just --help
 ```
 
-####CommitLint CLI
+#### CommitLint CLI
 ```bash
 yarn global add @commitlint/config-conventional @commitlint/cli
 # or
