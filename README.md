@@ -33,6 +33,8 @@ The UI will be created using Next.JS and React. It will be desinged to showcase 
 of the leaderboards from the imported games to any user with zero authentication. It will also
 be hosted on Vercel and remain so for the time being. 
 
+The application will start at http://localhost:3000 by default.
+
 ## Visualization Tools
 For this iteration, React Libraries such as ChartJS and ReactVis will be used to showcase 
 example usage.
