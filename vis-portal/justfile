@@ -1,0 +1,16 @@
+# List defaults
+default:
+    @just --list
+
+GREEN  := "\\u001b[32m"
+RESET  := "\\u001b[0m"
+CHECK  := `/usr/bin/printf "\xE2\x9C\x94"`
+
+build:
+    @yarn dev
+
+up: build
+    ./build
+
+test:
+    @echo -e " {{GREEN}}{{CHECK}} No tests yet, so guess they pass? {{CHECK}} {{RESET}}"
