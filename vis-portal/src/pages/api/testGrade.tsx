@@ -2,13 +2,14 @@
 import type {NextApiRequest, NextApiResponse} from 'next'
 
 export type Grade = {
-  id: number,
+  id: string,
+  course: string,
   date: Date,
   grade: string,
   score: number,
 }
 
-const grades: Grade[] = [{id: 1, date: new Date(), grade: "A", score: 99}, {id: 2, date: new Date(), grade: "C", score: 78}]
+const grades: Grade[] = [{id: "Ahmed", course: "Biology", date: new Date(), grade: "A", score: 99}, {id: "Douglas", course: "Biology", date: new Date(), grade: "C", score: 78}]
 
 export default function handler(
   req: NextApiRequest,
