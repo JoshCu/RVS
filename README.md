@@ -49,17 +49,21 @@ prepare-commit-msg is run when you open up the commit file (you may or may not d
 Dependencies
 These use the commitlint cli tool. Install this via your node package manager.
 
-'''{
-yarn global add @commitlint/config-conventional @commitlint/cli
-# or
-npm install --global @commitlint/config-conventional @commitlint/cli
-# etc
-}'''
+'''
+    {
+    yarn global add @commitlint/config-conventional @commitlint/cli
+    # or
+    npm install --global @commitlint/config-conventional @commitlint/cli
+    # etc
+    }
+'''
 
 Setup
 If you want to enable these in your workflow, make sure you run
-'''{
-git config core.hooksPath ".git-hooks"
-}'''
+'''
+    {
+        git config core.hooksPath ".git-hooks"
+    }
+'''
 
 This tells git where to look for git-hooks.
