@@ -37,3 +37,23 @@ be hosted on Vercel and remain so for the time being.
 For this iteration, React Libraries such as ChartJS and ReactVis will be used to showcase 
 example usage.
 
+## CICD
+Git hooks are a way to automate certain tasks triggered by git. This boilerplate uses conventional commits, so our git-hooks help us make sure our commit messages are following the correct standards before committing.
+
+commit-msg is run when you enter your commit message, and makes sure its following the right naming conventions.
+
+prepare-commit-msg is run when you open up the commit file (you may or may not do this in your general workflow, and that okay). All this does is add an extra newline so that if your entering a commit message from the CLI, you don't get a warning about spaces before body content.
+
+Dependencies
+These use the commitlint cli tool. Install this via your node package manager.
+
+>yarn global add @commitlint/config-conventional @commitlint/cli
+># or
+>npm install --global @commitlint/config-conventional @commitlint/cli
+># etc
+
+Setup
+If you want to enable these in your workflow, make sure you run
+
+>git config core.hooksPath ".git-hooks"
+This tells git where to look for git-hooks.
