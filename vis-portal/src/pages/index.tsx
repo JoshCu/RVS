@@ -1,13 +1,29 @@
-import Head from 'next/head'
-import { Open_Sans } from 'next/font/google'
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
+import {Open_Sans} from 'next/font/google';
+import Head from 'next/head';
+import React, {useEffect, useState} from 'react';
+import {Grade} from './api/testGrade';
 
-const openSans = Open_Sans({ subsets: ['latin'] })
+const openSans = Open_Sans({subsets: ['latin']})
 
 export default function Home() {
+  const [data, setData] = useState<Grade | null>(null);
   const [visualizationType, setVisualizationType] = useState("");
   const [showAdditionalFields, setShowAdditionalFields] = useState(false);
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch('/api/testGrade');
+      const json = await response.json();
+      setData(json);
+    }
+    fetchData();
+  }, []);
+
+  if (!data) {
+    return <div>Loading...</div>;
+  } else {
+    console.log(data);
+  }
 
   const handleVisualizationTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
@@ -43,7 +59,7 @@ export default function Home() {
                     Visualization Type
                   </label>
                   <select
-                    id="visualization-type" 
+                    id="visualization-type"
                     name="visualization-type"
                     value={visualizationType}
                     onChange={handleVisualizationTypeChange}
