@@ -7,8 +7,12 @@ module.exports = {
 
         // Or if using `src` directory:
         "./src/**/*.{js,ts,jsx,tsx}",
+        "./node_modules/@tremor/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
+        fontFamily: {
+            sans: ["Open Sans", "sans-serif"],
+        },
         extend: {},
     },
     plugins: [],
