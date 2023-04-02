@@ -53,8 +53,27 @@ prepare-commit-msg is run when you open up the commit file (you may or may not d
 
 ### Dependencies
 
-These use the commitlint cli tool. Install this via your node package manager.
+These use the commitlint cli tool and Just. Install this via your node package manager.
 
+####Just
+To install Just to ~/bin:
+```bash 
+# cVreate ~/bin
+mkdir -p ~/bin
+
+# download and extract just to ~/bin/just
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/bin
+
+# add `~/bin` to the paths that your shell searches for executables
+# this line should be added to your shells initialization file,
+# e.g. `~/.bashrc` or `~/.zshrc`
+export PATH="$PATH:$HOME/bin"
+
+# just should now be executable
+just --help
+```
+
+####CommitLint CLI
 ```bash
 yarn global add @commitlint/config-conventional @commitlint/cli
 # or
