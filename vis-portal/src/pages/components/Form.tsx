@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Grade } from '../api/testGrade';
-import { Card, Title, DonutChart } from "@tremor/react";
+import {BarChart, DonutChart, Dropdown, DropdownItem, Text, Title} from "@tremor/react";
+import {useEffect, useState} from 'react';
+import {Grade} from '../api/testGrade';
 
 const Form = () => {
   const [data, setData] = useState<Grade[] | null>(null);
   const [visualizationType, setVisualizationType] = useState("");
-  const [showAdditionalFields, setShowAdditionalFields] = useState(false);
+  const [gameTitle, setGameTitle] = useState("");
+  // const [showAdditionalFields, setShowAdditionalFields] = useState(false);
   const [submit, setSubmit] = useState(false);
+
+  const visualizations = ['Pie Chart', 'Bar Chart'];
+  const isSubmitDisabled = !gameTitle || !visualizationType;
 
   useEffect(() => {
     async function fetchData() {
@@ -23,10 +27,14 @@ const Form = () => {
     console.log(data);
   }
 
-  const handleVisualizationTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value;
-    setVisualizationType(value);
-    setShowAdditionalFields(value === "type1");
+  const handleGameTitleChange = (selection: string) => {
+    setSubmit(selection === gameTitle ? true : false);
+    setGameTitle(selection);
+  }
+
+  const handleVisualizationTypeChange = (selection: string) => {
+    setSubmit(selection === visualizationType ? true : false);
+    setVisualizationType(selection)
   };
 
   const handleOnSubmit = (game: string, visualizationType: string) => {
@@ -35,57 +43,77 @@ const Form = () => {
 
   return (
     <>
-      <div id="form" className="w-1/2 h-full border-r border-black">
+      <div id="form" className="w-1/4 h-full border-r border-black">
         <form className="flex-grow p-1">
           <div className="mb-4">
-            <label htmlFor="game-title" className="block font-bold mb-2">
-              Game Title
-            </label>
-            <select id="game-title" name="game-title" className="block w-full py-2 cursor-pointer border-gray-300 rounded-sm shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              <option value="">Select a game title</option>
-              <option value="Biology">Biology</option>
-            </select>
+            <Text className="block font-bold text-black text-base mb-2">Game Title</Text>
+            <Dropdown
+              onValueChange={(e) => handleGameTitleChange(e)}
+              placeholder="Select a game to visualize"
+            >
+              <DropdownItem value="Biology" text="Biology" />
+            </Dropdown>
           </div>
           <div className="mb-4">
-            <label htmlFor="visualization-type" className="block font-bold mb-2">
-              Visualization Type
-            </label>
-            <select
-              id="visualization-type" 
-              name="visualization-type"
-              value={visualizationType}
-              onChange={handleVisualizationTypeChange}
-              className="block w-full py-2 cursor-pointer border-gray-300 rounded-sm shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            <Text className="text-black font-bold text-base">Visualization Type</Text>
+            <Dropdown
+              className="mt-2"
+              onValueChange={(e) => handleVisualizationTypeChange(e)}
+              placeholder="Select a visualization type"
             >
-              <option value="">Select a visualization type</option>
-              <option value="type1">Pie Chart</option>
-            </select>
+              {visualizations.map((visual, index) => (
+                <DropdownItem key={index} value={visualizations[index]} text={visual} />
+              ))}
+            </Dropdown>
           </div>
         </form>
         <div className="flex-shrink-0 p-1">
           <button
             type="submit"
-            className="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600"
+            className="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
             onClick={() => handleOnSubmit("Biology", "Pie Chart")}
+            disabled={isSubmitDisabled}
           >
             Submit
           </button>
         </div>
       </div>
-      {submit &&
-        <div id="visualization" className="w-2/5 h-3/4 m-auto">
-          <Card className="w-full h-full bg-gray-200 shadow-none">
-            <Title>Biology Grades</Title>
-            <DonutChart
-              className="mt-6 h-2/3 w-2/3 m-auto"
-              data={data}
-              category="score"
-              index="id"
-              colors={["violet","rose"]}
-            />
-          </Card>
+      {submit ? (
+        <div className="flex justify-center items-center h-full w-3/4">
+          <div id="visualization" className="w-full h-full">
+            {visualizationType === "Pie Chart" && (
+              <div className="w-full h-full shadow-none flex flex-col justify-center items-center">
+                <Title mt-='15px'>Biology Grades</Title>
+                <DonutChart
+                  className="mt-6 h-2/3 w-2/3 m-auto"
+                  data={data}
+                  category="score"
+                  index="id"
+                  colors={["violet", "rose", "emerald", "purple", "blue", "gray"]}
+                />
+              </div>
+            )}
+            {visualizationType === "Bar Chart" && (
+              <div className="w-full h-full shadow-none flex flex-col justify-center items-center">
+                <Title mt-='15px'>Biology Grades</Title>
+                <BarChart
+                  className="mt-6 h-2/3 w-full m-auto"
+                  data={data}
+                  index="id"
+                  categories={["score"]}
+                  colors={["blue"]}
+                />
+              </div>
+            )}
+          </div>
         </div>
-      }
+      ) : (
+        <div className="flex justify-center items-center h-full w-3/4">
+          <p className="text-center text-gray-400">
+            No data to show. Please select a game and visualization type.
+          </p>
+        </div>
+      )}
     </>
   )
 }

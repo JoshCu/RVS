@@ -9,7 +9,6 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>VisPortal</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="h-screen w-screen overflow-hidden">

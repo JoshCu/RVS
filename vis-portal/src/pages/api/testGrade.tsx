@@ -9,7 +9,14 @@ export type Grade = {
   score: number,
 }
 
-const grades: Grade[] = [{id: "Ahmed", course: "Biology", date: new Date(), grade: "A", score: 99}, {id: "Douglas", course: "Biology", date: new Date(), grade: "C", score: 78}]
+const grades: Grade[] = [
+  {id: "Ahmed", course: "Biology", date: new Date(), grade: "A", score: 99},
+  {id: "Douglas", course: "Biology", date: new Date(), grade: "C", score: 78},
+  {id: "Josh", course: "Biology", date: new Date(), grade: "B", score: 84},
+  {id: "Murtaza", course: "Biology", date: new Date(), grade: "B", score: 81},
+  {id: "Waziha", course: "Biology", date: new Date(), grade: "A", score: 90},
+  {id: "Andrew", course: "Biology", date: new Date(), grade: "A", score: 100}
+]
 
 export default function handler(
   req: NextApiRequest,
