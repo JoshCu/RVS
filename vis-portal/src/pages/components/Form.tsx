@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, RefObject } from 'react';
 import { Grade } from '../api/testGrade';
 import { Title, DonutChart, BarChart, Dropdown, DropdownItem, Text } from "@tremor/react";
 
@@ -8,8 +8,8 @@ const Form = () => {
   const [gameTitle, setGameTitle] = useState("");
   // const [showAdditionalFields, setShowAdditionalFields] = useState(false);
   const [submit, setSubmit] = useState(false);
+  
   const visualizations = ['Pie Chart', 'Bar Chart'];
-
   const isSubmitDisabled = !gameTitle || !visualizationType;
 
   useEffect(() => {
@@ -28,12 +28,12 @@ const Form = () => {
   }
 
   const handleGameTitleChange = (selection: string) => {
-    setSubmit(false);
+    setSubmit(selection === gameTitle ? true : false);
     setGameTitle(selection);
   }
 
   const handleVisualizationTypeChange = (selection: string) => {
-    setSubmit(false);
+    setSubmit(selection === visualizationType ? true : false);
     setVisualizationType(selection)
   };
 
@@ -43,7 +43,7 @@ const Form = () => {
 
   return (
     <>
-      <div id="form" className="w-1/2 h-full border-r border-black">
+      <div id="form" className="w-1/4 h-full border-r border-black">
         <form className="flex-grow p-1">
           <div className="mb-4">
             <Text className="block font-bold text-black text-base mb-2">Game Title</Text>
@@ -79,34 +79,36 @@ const Form = () => {
         </div>
       </div>
       {submit ? (
-        <div id="visualization" className="w-2/5 h-3/4 m-auto">
-          {visualizationType === "Pie Chart" && (
-            <div className="w-full h-full shadow-none">
-              <Title>Biology Grades</Title>
-              <DonutChart
-                className="mt-6 h-2/3 w-2/3 m-auto"
-                data={data}
-                category="score"
-                index="id"
-                colors={["violet","rose"]}
-              />
-            </div>
-          )}
-          {visualizationType === "Bar Chart" && (
-            <div className="w-full h-full shadow-none">
-              <Title>Biology Grades</Title>
-              <BarChart
-                className="mt-6 h-2/3 w-full m-auto"
-                data={data}
-                index="id"
-                categories={["score"]}
-                colors={["blue"]}
-              />
-            </div>
-          )}
+        <div className="flex justify-center items-center h-full w-3/4">
+          <div id="visualization" className="w-full h-full">
+            {visualizationType === "Pie Chart" && (
+              <div className="w-full h-full shadow-none flex flex-col justify-center items-center">
+                <Title>Biology Grades</Title>
+                <DonutChart
+                  className="mt-6 h-2/3 w-2/3 m-auto"
+                  data={data}
+                  category="score"
+                  index="id"
+                  colors={["violet","rose", "emerald", "purple", "blue", "gray"]}
+                />
+              </div>
+            )}
+            {visualizationType === "Bar Chart" && (
+              <div className="w-full h-full shadow-none flex flex-col justify-center items-center">
+                <Title>Biology Grades</Title>
+                <BarChart
+                  className="mt-6 h-2/3 w-full m-auto"
+                  data={data}
+                  index="id"
+                  categories={["score"]}
+                  colors={["blue"]}
+                />
+              </div>
+            )}
+          </div>
         </div>
       ) : (
-        <div className="flex justify-center items-center h-full w-1/2">
+        <div className="flex justify-center items-center h-full w-3/4">
           <p className="text-center text-gray-400">
             No data to show. Please select a game and visualization type.
           </p>
