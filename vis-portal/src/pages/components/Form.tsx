@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef, RefObject } from 'react';
-import { Grade } from '../api/testGrade';
-import { Title, DonutChart, BarChart, Dropdown, DropdownItem, Text } from "@tremor/react";
+import {BarChart, DonutChart, Dropdown, DropdownItem, Text, Title} from "@tremor/react";
+import {useEffect, useState} from 'react';
+import {Grade} from '../api/testGrade';
 
 const Form = () => {
   const [data, setData] = useState<Grade[] | null>(null);
@@ -8,7 +8,7 @@ const Form = () => {
   const [gameTitle, setGameTitle] = useState("");
   // const [showAdditionalFields, setShowAdditionalFields] = useState(false);
   const [submit, setSubmit] = useState(false);
-  
+
   const visualizations = ['Pie Chart', 'Bar Chart'];
   const isSubmitDisabled = !gameTitle || !visualizationType;
 
@@ -61,8 +61,8 @@ const Form = () => {
               onValueChange={(e) => handleVisualizationTypeChange(e)}
               placeholder="Select a visualization type"
             >
-              { visualizations.map((visual, index) => (
-                <DropdownItem value={visualizations[index]} text={visual} />
+              {visualizations.map((visual, index) => (
+                <DropdownItem key={index} value={visualizations[index]} text={visual} />
               ))}
             </Dropdown>
           </div>
@@ -83,19 +83,19 @@ const Form = () => {
           <div id="visualization" className="w-full h-full">
             {visualizationType === "Pie Chart" && (
               <div className="w-full h-full shadow-none flex flex-col justify-center items-center">
-                <Title>Biology Grades</Title>
+                <Title mt-='15px'>Biology Grades</Title>
                 <DonutChart
                   className="mt-6 h-2/3 w-2/3 m-auto"
                   data={data}
                   category="score"
                   index="id"
-                  colors={["violet","rose", "emerald", "purple", "blue", "gray"]}
+                  colors={["violet", "rose", "emerald", "purple", "blue", "gray"]}
                 />
               </div>
             )}
             {visualizationType === "Bar Chart" && (
               <div className="w-full h-full shadow-none flex flex-col justify-center items-center">
-                <Title>Biology Grades</Title>
+                <Title mt-='15px'>Biology Grades</Title>
                 <BarChart
                   className="mt-6 h-2/3 w-full m-auto"
                   data={data}
