@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, RefObject } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grade } from '../api/testGrade';
 import { Title, DonutChart, BarChart, Dropdown, DropdownItem, Text } from "@tremor/react";
 
