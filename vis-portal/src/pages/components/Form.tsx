@@ -1,9 +1,9 @@
-import { BarChart, DonutChart, Dropdown, DropdownItem, Text, Title } from "@tremor/react";
-import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { setGrades } from '../../store/slices/testSlice';
-import { setGames } from '../../store/slices/gameSlice';
-import { selectGrade, selectGame } from '../../store/store';
+import {BarChart, DonutChart, Dropdown, DropdownItem, Text, Title} from "@tremor/react";
+import {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {setGames} from '../../store/slices/gameSlice';
+import {setGrades} from '../../store/slices/testSlice';
+import {selectGame, selectGrade} from '../../store/store';
 
 const Form = () => {
   const [visualizationType, setVisualizationType] = useState("");
