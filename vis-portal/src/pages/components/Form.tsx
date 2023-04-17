@@ -1,9 +1,11 @@
-import {BarChart, DonutChart, Dropdown, DropdownItem, Text, Title} from "@tremor/react";
-import {useEffect, useState} from 'react';
-import {Grade} from '../api/testGrade';
+import { BarChart, DonutChart, Dropdown, DropdownItem, Text, Title } from "@tremor/react";
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setGrades } from '../../store/slices/testSlice';
+import { setGames } from '../../store/slices/gameSlice';
+import { selectGrade, selectGame } from '../../store/store';
 
 const Form = () => {
-  const [data, setData] = useState<Grade[] | null>(null);
   const [visualizationType, setVisualizationType] = useState("");
   const [gameTitle, setGameTitle] = useState("");
   // const [showAdditionalFields, setShowAdditionalFields] = useState(false);
@@ -12,20 +14,36 @@ const Form = () => {
   const visualizations = ['Pie Chart', 'Bar Chart'];
   const isSubmitDisabled = !gameTitle || !visualizationType;
 
+  const grades = useSelector(selectGrade);
+  const games = useSelector(selectGame);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    async function fetchData() {
+    async function fetchGrades() {
       const response = await fetch('/api/testGrade');
       const json = await response.json();
-      setData(json);
+      dispatch(setGrades(json));
     }
-    fetchData();
-  }, []);
 
-  if (!data) {
+    async function fetchGames() {
+      const response = await fetch('/api/gameNames');
+      const json = await response.json();
+      dispatch(setGames(json));
+    }
+
+    fetchGrades();
+    fetchGames();
+
+  }, [dispatch]);
+
+  if (!grades) {
     return <div>Loading...</div>;
   } else {
-    console.log(data);
+    console.log(grades);
   }
+
+  console.log(games);
 
   const handleGameTitleChange = (selection: string) => {
     setSubmit(selection === gameTitle ? true : false);
@@ -86,7 +104,7 @@ const Form = () => {
                 <Title mt-='15px'>Biology Grades</Title>
                 <DonutChart
                   className="mt-6 h-2/3 w-2/3 m-auto"
-                  data={data}
+                  data={grades}
                   category="score"
                   index="id"
                   colors={["violet", "rose", "emerald", "purple", "blue", "gray"]}
@@ -98,7 +116,7 @@ const Form = () => {
                 <Title mt-='15px'>Biology Grades</Title>
                 <BarChart
                   className="mt-6 h-2/3 w-full m-auto"
-                  data={data}
+                  data={grades}
                   index="id"
                   categories={["score"]}
                   colors={["blue"]}
