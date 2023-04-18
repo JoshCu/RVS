@@ -88,7 +88,7 @@ const Form = () => {
         <div className="flex-shrink-0 p-1">
           <button
             type="submit"
-            className="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 ease-linear transition-all duration-150 disabled:bg-gray-400 disabled:cursor-not-allowed"
             onClick={() => handleOnSubmit("Biology", "Pie Chart")}
             disabled={isSubmitDisabled}
           >
