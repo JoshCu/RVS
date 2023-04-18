@@ -1,103 +1,104 @@
-import {Button} from "@tremor/react";
-import {ChangeEvent, useState} from "react";
-import {FaSpinner} from "react-icons/fa";
+import { Button } from "@tremor/react";
+import { ChangeEvent, useState } from "react";
+import { FaSpinner } from "react-icons/fa";
 
 const InputFormModal = () => {
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState("");
-  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [isFileSubmitted, setIsFileSubmitted] = useState(false);
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isValidFile, setIsValidFile] = useState(true);
+
+  const isSubmitDisabled = isValidEmail == false || !selectedFile;
+  const emailRegex = /^[a-zA-Z]{2,3}\d+@uakron\.edu$/;
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const {value} = event.target;
+    const { value } = event.target;
+    setEmail(value);
 
-    if (emailRegex.test(value) && value.endsWith("@uakron.edu")) {
-      setEmail(value);
+    if (emailRegex.test(value)) {
       setIsValidEmail(true);
     } else {
-      alert("Please enter a valid University of Akron Email.");
+      setIsValidEmail(false);
     }
   };
 
-  const handleJSONUpload = () => {
-    setIsUploading(true);
-
-    // Replace this with actual JSON upload code
-    setTimeout(() => {
-      setIsUploading(false);
-      setIsFileSubmitted(true);
-      alert("JSON data uploaded!");
-    }, 2000);
+  const handleJSONUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setSelectedFile(e.target.files[0]);
+    }
   };
 
-  const handleUploadButtonClick = () => {
-    if (isValidEmail && isFileSubmitted) {
-      alert("File Submitted.");
-    } else {
-      alert("Please enter a valid email and file.");
+  const handleFormSubmission = () => {
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.readAsText(selectedFile);
+      reader.onload = () => {
+        if (typeof reader.result === 'string' && reader.result !== "") {
+          try {
+            JSON.parse(reader.result);
+            setIsUploading(true);
+            setTimeout(() => {
+              setIsUploading(false);
+              alert("JSON data uploaded!");
+            }, 2000);
+            setIsValidFile(true);
+          } catch (e) {
+            setIsValidFile(false);
+            alert("Selected file is not a valid JSON file");
+          }
+        }
+      }
     }
+  };
+
+  const handleCloseModal = () => {
+    setEmail("");
+    setSelectedFile(null);
+    setIsValidEmail(true);
+    setIsValidFile(true);
+    setShowModal(false);
   };
 
   return (
     <>
-      <Button onClick={() => setShowModal(true)}>Submit New Game</Button>
+      <button className="absolute top-3 right-2 py-2 px-4 bg-indigo-500 rounded text-white hover:bg-indigo-600" onClick={() => setShowModal(true)}>Submit New Game</button>
       {showModal ? (
         <>
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-            <div className="relative w-auto my-6 mx-auto max-w-3xl">
-              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-                  <h3 className="text-3xl font-semibold">
-                    Submit New Game
-                  </h3>
-                  <button
-                    className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                    onClick={() => setShowModal(false)}
-                  >
-                    <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                      X
-                    </span>
-                  </button>
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 shadow-lg">
+            <div className="w-1/4 h-1/4 bg-white rounded">
+              <div className="flex flex-col h-full">
+                <div className="p-2">
+                  <p className="text-3xl text-center">Upload Game Data</p>
+                  <form className="mt-4 flex-grow">
+                    <div className="mb-2">
+                      <label htmlFor="email" className="block text-sm font-bold">
+                        Email
+                      </label>
+                      <input id="email" onChange={handleEmailChange} className={`w-full py-1 border ${isValidEmail ? "border-gray-300" : "border-red-500"} border-gray-300 rounded focus:outline-none`} type="email" placeholder="user@domain.com" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold" htmlFor="file-upload">Game File Upload (only accepts JSON files)</label>
+                      <input onChange={handleJSONUpload} className={`block w-full py-1 text-sm border ${isValidFile ? "border-gray-300" : "border-red-500"} rounded cursor-pointer bg-white`} id="default_size" type="file" accept=".json" />
+                    </div>
+                  </form>
                 </div>
-                <div className="flex flex-col space-y-2">
-                  <label htmlFor="email" className="font-bold text-lg">
-                    Email:
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    onChange={handleEmailChange}
-                    className={'border rounded-lg p2 ${isValidEmail ? "border-green-500" : "border-red-500"}'}
-                  />
-                  {!isValidEmail && (
-                    <p className="text-red-500"> Please enter a valid University of Akron Email</p>
-                  )}
-                  <button onClick={handleJSONUpload} className="bg-blue-500 text-white px-4 py-2 rounded-lg">
-                    {isUploading ? (
-                      <div className="flex items-center">
-                        <FaSpinner className="animate-spin mr-2" />
-                        Uploading...
-                      </div>
-                    ) : ("Submit File")}
-                  </button>
-                </div>
-                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
-                  <button
-                    className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                  >
+                <div className="flex justify-end p-2 space-x-2">
+                  <button onClick={handleCloseModal} className="text-red-500 background-transparent font-bold uppercase px-6 py-1 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
                     Close
                   </button>
                   <button
-                    className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={handleFormSubmission}
+                    className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
+                    disabled={isSubmitDisabled}
                   >
-                    Save Changes
+                    {isUploading ? (
+                      <div className="flex items-center">
+                        <FaSpinner className="animate-spin mr-2" />
+                        Uploading
+                      </div>
+                    ) : ("Upload")}
                   </button>
                 </div>
               </div>
@@ -110,4 +111,5 @@ const InputFormModal = () => {
     </>
   )
 };
+
 export default InputFormModal;
