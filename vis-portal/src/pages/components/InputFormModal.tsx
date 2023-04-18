@@ -67,7 +67,7 @@ const InputFormModal = () => {
       {showModal ? (
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 shadow-lg">
-            <div className="w-1/4 h-1/4 bg-white rounded">
+            <div className="w-96 min-w-96 h-60 min-h-60 bg-white rounded">
               <div className="flex flex-col h-full">
                 <div className="p-2">
                   <p className="text-3xl text-center">Upload Game Data</p>
