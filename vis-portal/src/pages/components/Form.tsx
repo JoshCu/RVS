@@ -70,7 +70,7 @@ const Form = () => {
               placeholder="Select a game to visualize"
             >
               {games.map((game, index) => (
-                <DropdownItem key={index} value={games[index].name} text={games[index].name} />
+                <DropdownItem key={index} value={game.name} text={game.name} />
               ))}
             </Dropdown>
           </div>
