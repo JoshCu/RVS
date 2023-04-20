@@ -2,10 +2,11 @@ import {BarChart, DonutChart, Dropdown, DropdownItem, Text, Title} from "@tremor
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {setGames, setSelectedGameId} from '../../store/slices/gameSlice';
+import {setScores} from '../../store/slices/scoreSlice';
 import {setGrades} from '../../store/slices/testSlice';
 import {selectGame, selectGrade, selectSelectedGameId} from '../../store/store';
-import {setScores} from '../../store/slices/scoreSlice';
 import {Game} from '../api/gameNames';
+import DragAndDropComponent from "./DragDrop";
 
 const Form = () => {
   const [visualizationType, setVisualizationType] = useState("");
@@ -139,6 +140,7 @@ const Form = () => {
           </p>
         </div>
       )}
+      <DragAndDropComponent data={grades} />
     </>
   )
 }

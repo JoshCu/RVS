@@ -1,5 +1,4 @@
-
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
 
 interface GameStat {
@@ -37,12 +36,12 @@ const DragAndDropComponent: React.FC<Props> = ({data}) => {
 
   const gameStats = data[0] || {};
   const allStats: GameStat[] = Object.entries(gameStats).map(([key, value]) => ({
-    key,
-    value,
+    key: key,
+    value: value as string | number,
     isNumerical: typeof value === "number",
   }));
 
-  React.useEffect(() => {
+  useEffect(() => {
     const categorical: GameStat[] = [];
     const numerical: GameStat[] = [];
     allStats.forEach((stat) => {
