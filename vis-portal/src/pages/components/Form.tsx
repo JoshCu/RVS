@@ -6,7 +6,6 @@ import {setScores} from '../../store/slices/scoreSlice';
 import {setGrades} from '../../store/slices/testSlice';
 import {selectGame, selectGrade, selectSelectedGameId} from '../../store/store';
 import {Game} from '../api/gameNames';
-import DragAndDropComponent from "./DragDrop";
 
 const Form = () => {
   const [visualizationType, setVisualizationType] = useState("");
@@ -140,7 +139,6 @@ const Form = () => {
           </p>
         </div>
       )}
-      <DragAndDropComponent data={grades} />
     </>
   )
 }
