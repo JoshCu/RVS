@@ -1,19 +1,23 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export type Game = {
-  uuid: string,
-  gameName: string
+  _id: string,
+  name: string,
+  creator: string
 }
 
-const games: Game[] = [
-  {uuid: "1234567890", gameName: "Fun Times"},
-  {uuid: "0987654321", gameName: "Funner Times"},
-]
-
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Game[]>
 ) {
   // use NextApiRequest to call on API Endpoint to retrieve Data
-  res.status(200).json(games)
+  const response = await fetch("https://us-east-1.aws.data.mongodb-api.com/app/application-0-yysqb/endpoint/get_all_games", {
+    headers: {
+      'Content-Type': 'application/json',
+      'apiKey': `${process.env.MONGODB_REALMS_API_KEY}`
+    }
+  });
+  const data = await response.json();
+
+  res.status(200).json(data);
 }

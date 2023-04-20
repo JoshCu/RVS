@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Game {
-  uuid: string;
-  gameName: string;
+  _id: string;
+  name: string;
+  creator: string;
 }
 
 interface GameState {

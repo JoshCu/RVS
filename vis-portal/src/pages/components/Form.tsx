@@ -69,7 +69,9 @@ const Form = () => {
               onValueChange={(e) => handleGameTitleChange(e)}
               placeholder="Select a game to visualize"
             >
-              <DropdownItem value="Biology" text="Biology" />
+              {games.map((game, index) => (
+                <DropdownItem key={index} value={games[index].name} text={games[index].name} />
+              ))}
             </Dropdown>
           </div>
           <div className="mb-4">
