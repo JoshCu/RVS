@@ -50,7 +50,14 @@ const Form = () => {
     setGameTitle(selection);
   }
 
-  const handleVisualizationTypeChange = (selection: string) => {
+  const handleVisualizationTypeChange = async (selection: string) => {
+    if (selection !== visualizationType) {
+      setSubmit(true);
+      setVisualizationType(selection);
+      const response = await fetch('/api/gameScores');
+      const json = await response.json();
+      dispatch(setGrades(json));
+    }
     setSubmit(selection === visualizationType ? true : false);
     setVisualizationType(selection)
   };
