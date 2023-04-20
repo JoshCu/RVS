@@ -14,3 +14,5 @@ export type RootState = ReturnType<typeof store.getState>;
 export const selectGrade = (state: RootState) => state.grade.grades;
 
 export const selectGame = (state: RootState) => state.game.games;
+
+export const selectSelectedGameId = (state: RootState) => state.game.selectedGameId;

@@ -1,21 +1,24 @@
 import {BarChart, DonutChart, Dropdown, DropdownItem, Text, Title} from "@tremor/react";
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {setGames} from '../../store/slices/gameSlice';
+import {setGames, setSelectedGameId} from '../../store/slices/gameSlice';
 import {setGrades} from '../../store/slices/testSlice';
-import {selectGame, selectGrade} from '../../store/store';
+import {selectGame, selectGrade, selectSelectedGameId} from '../../store/store';
+import {setScores} from '../../store/slices/scoreSlice';
+import {Game} from '../api/gameNames';
 
 const Form = () => {
   const [visualizationType, setVisualizationType] = useState("");
-  const [gameTitle, setGameTitle] = useState("");
   // const [showAdditionalFields, setShowAdditionalFields] = useState(false);
   const [submit, setSubmit] = useState(false);
 
   const visualizations = ['Pie Chart', 'Bar Chart'];
-  const isSubmitDisabled = !gameTitle || !visualizationType;
 
   const grades = useSelector(selectGrade);
   const games = useSelector(selectGame);
+  const selectedGameId = useSelector(selectSelectedGameId);
+
+  const isSubmitDisabled = !selectedGameId || !visualizationType;
 
   const dispatch = useDispatch();
 
@@ -43,26 +46,21 @@ const Form = () => {
     console.log(grades);
   }
 
-  console.log(games);
-
-  const handleGameTitleChange = (selection: string) => {
-    setSubmit(selection === gameTitle ? true : false);
-    setGameTitle(selection);
+  const handleGameTitleChange = async (selection: Game) => {
+    if (selection._id !== selectedGameId) {
+      dispatch(setSelectedGameId(selection._id));
+      const response = await fetch(`/api/gameScores?game_id=${selection._id}`);
+      const json = await response.json();
+      dispatch(setScores(json));
+    }
   }
 
   const handleVisualizationTypeChange = async (selection: string) => {
-    if (selection !== visualizationType) {
-      setSubmit(true);
-      setVisualizationType(selection);
-      const response = await fetch('/api/gameScores');
-      const json = await response.json();
-      dispatch(setGrades(json));
-    }
     setSubmit(selection === visualizationType ? true : false);
     setVisualizationType(selection)
   };
 
-  const handleOnSubmit = (game: string, visualizationType: string) => {
+  const handleOnSubmit = () => {
     setSubmit(true);
   }
 
@@ -73,11 +71,11 @@ const Form = () => {
           <div className="mb-4">
             <Text className="block font-bold text-black text-base mb-2">Game Title</Text>
             <Dropdown
-              onValueChange={(e) => handleGameTitleChange(e)}
+              onValueChange={(value) => handleGameTitleChange(JSON.parse(value))}
               placeholder="Select a game to visualize"
             >
               {games.map((game, index) => (
-                <DropdownItem key={index} value={game.name} text={game.name} />
+                <DropdownItem key={index} value={JSON.stringify(game)} text={game.name} />
               ))}
             </Dropdown>
           </div>
@@ -98,7 +96,7 @@ const Form = () => {
           <button
             type="submit"
             className="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 ease-linear transition-all duration-150 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            onClick={() => handleOnSubmit("Biology", "Pie Chart")}
+            onClick={handleOnSubmit}
             disabled={isSubmitDisabled}
           >
             Submit
