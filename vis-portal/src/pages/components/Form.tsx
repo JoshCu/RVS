@@ -1,10 +1,11 @@
 import {BarChart, DonutChart, Dropdown, DropdownItem, Text, Title} from "@tremor/react";
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import {CartesianGrid, Legend, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from "recharts";
 import {setGames, setSelectedGameId} from '../../store/slices/gameSlice';
 import {setScores} from '../../store/slices/scoreSlice';
 import {setGrades} from '../../store/slices/testSlice';
-import {selectGame, selectGrade, selectSelectedGameId, selectScores} from '../../store/store';
+import {selectGame, selectGrade, selectScores, selectSelectedGameId} from '../../store/store';
 import {Game} from '../api/gameNames';
 
 const Form = () => {
@@ -18,7 +19,7 @@ const Form = () => {
   const [categoricalScores, setCategoricalScores] = useState<string[]>([]);
   const [continuousScores, setContinuousScores] = useState<string[]>([]);
 
-  const visualizations = ['Pie Chart', 'Bar Chart'];
+  const visualizations = ['Pie Chart', 'Bar Chart', 'Scatter Chart'];
 
   const grades = useSelector(selectGrade);
   const games = useSelector(selectGame);
@@ -68,13 +69,17 @@ const Form = () => {
       setParameter2("");
       setSubmit(false);
       setVisualizationType(selection);
-      
-      switch(selection) {
+
+      switch (selection) {
         case 'Pie Chart':
           setField1("Category");
           setField2("Value");
           break;
         case 'Bar Chart':
+          setField1("X-Axis");
+          setField2("Y-Axis");
+          break;
+        case 'Scatter Chart':
           setField1("X-Axis");
           setField2("Y-Axis");
           break;
@@ -85,7 +90,7 @@ const Form = () => {
 
       // Iterate over the object's properties
       for (const [key, value] of Object.entries(gameScores[0])) {
-        console.log(typeof(value))
+        console.log(typeof (value))
         // Check if the value is a number
         if (typeof value === 'number') {
           continuousVars.push(key);
@@ -93,7 +98,7 @@ const Form = () => {
           categoricalVars.push(key);
         }
       }
-      
+
       setCategoricalScores(categoricalVars);
       setContinuousScores(continuousVars);
       console.log(continuousScores)
@@ -119,6 +124,7 @@ const Form = () => {
       case "Pie Chart":
         return parameter1 === "";
       case "Bar Chart":
+      case "Scatter Chart":
         return parameter1 === "" || parameter2 === "";
       default:
         return true;
@@ -194,6 +200,34 @@ const Form = () => {
               </div>
             </div>
           )}
+          {visualizationType === "Scatter Chart" && (
+            <div>
+              <div className="mb-4">
+                <Text className="text-black font-bold text-base">{field1}</Text>
+                <Dropdown
+                  className="mt-2"
+                  onValueChange={(e) => handleFieldOneChange(e)}
+                  placeholder={`Select a parameter for ${field1}`}
+                >
+                  {continuousScores.map((continuousScore, index) => (
+                    <DropdownItem key={index} value={continuousScore} text={continuousScore} />
+                  ))}
+                </Dropdown>
+              </div>
+              <div className="mb-4">
+                <Text className="text-black font-bold text-base">{field2}</Text>
+                <Dropdown
+                  className="mt-2"
+                  onValueChange={(e) => handleFieldTwoChange(e)}
+                  placeholder={`Select a parameter for ${field2}`}
+                >
+                  {continuousScores.map((continuousScore, index) => (
+                    <DropdownItem key={index} value={continuousScore} text={continuousScore} />
+                  ))}
+                </Dropdown>
+              </div>
+            </div>
+          )}
         </form>
         <div className="flex-shrink-0 p-1">
           <button
@@ -232,6 +266,27 @@ const Form = () => {
                 />
               </div>
             )}
+            {visualizationType === 'Scatter Chart' && (
+              <div className="w-full h-full shadow-none flex flex-col justify-center items-center">
+                <Title mt-='15px'>{parameter2} by {parameter1}</Title>
+                <ScatterChart
+                  width={730}
+                  height={250}
+                  margin={{
+                    top: 20,
+                    right: 20,
+                    bottom: 10,
+                    left: 10,
+                  }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey={parameter1} type="number" />
+                  <YAxis dataKey={parameter2} type="number" />
+                  <Tooltip cursor={{strokeDasharray: '3 3'}} />
+                  <Legend />
+                  <Scatter name={parameter2} data={gameScores} className="fill-blue-400" />
+                </ScatterChart>
+              </div>
+            )}
           </div>
         </div>
       ) : (
@@ -240,7 +295,8 @@ const Form = () => {
             No data to show. Please select a game and visualization type.
           </p>
         </div>
-      )}
+      )
+      }
     </>
   )
 }
