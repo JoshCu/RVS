@@ -10,7 +10,6 @@ import {Game} from '../api/gameNames';
 
 const Form = () => {
   const [visualizationType, setVisualizationType] = useState("");
-  const [showAdditionalFields, setShowAdditionalFields] = useState(false);
   const [submit, setSubmit] = useState(false);
   const [field1, setField1] = useState("");
   const [field2, setField2] = useState("");
@@ -25,8 +24,6 @@ const Form = () => {
   const games = useSelector(selectGame);
   const selectedGameId = useSelector(selectSelectedGameId);
   const gameScores = useSelector(selectScores);
-
-  let isSubmitDisabled = true;
 
   const dispatch = useDispatch();
 
@@ -59,6 +56,12 @@ const Form = () => {
       const json = await response.json();
       dispatch(setScores(json));
     }
+    setCategoricalScores([]);
+    setContinuousScores([]);
+    setParameter1("");
+    setParameter2("");
+    setSubmit(false);
+    setVisualizationType("");
   }
 
   const handleVisualizationTypeChange = async (selection: string) => {
@@ -151,7 +154,7 @@ const Form = () => {
             <Dropdown
               className="mt-2"
               onValueChange={(e) => handleVisualizationTypeChange(e)}
-              placeholder="Select a visualization type"
+              placeholder={visualizationType !== "" ? visualizationType : "Select a visualization type"}
             >
               {visualizations.map((visual, index) => (
                 <DropdownItem key={index} value={visualizations[index]} text={visual} />
@@ -245,7 +248,7 @@ const Form = () => {
           <div id="visualization" className="w-full h-full">
             {visualizationType === "Pie Chart" && (
               <div className="w-full h-full shadow-none flex flex-col justify-center items-center">
-                <Title mt-='15px'>Biology Grades</Title>
+                <Title mt-='15px'>{parameter1} grouped by player_name</Title>
                 <DonutChart
                   className="mt-6 h-2/3 w-2/3 m-auto"
                   data={gameScores}
@@ -256,7 +259,7 @@ const Form = () => {
             )}
             {visualizationType === "Bar Chart" && (
               <div className="w-full h-full shadow-none flex flex-col justify-center items-center">
-                <Title mt-='15px'>Biology Grades</Title>
+                <Title mt-='15px'>{parameter2} by {parameter1}</Title>
                 <BarChart
                   className="mt-6 h-2/3 w-full m-auto"
                   data={gameScores}
@@ -283,7 +286,7 @@ const Form = () => {
                   <YAxis dataKey={parameter2} type="number" />
                   <Tooltip cursor={{strokeDasharray: '3 3'}} />
                   <Legend />
-                  <Scatter name={parameter2} data={gameScores} className="fill-blue-400" />
+                  <Scatter name={parameter2} data={gameScores} fill="#8884d8" />
                 </ScatterChart>
               </div>
             )}
