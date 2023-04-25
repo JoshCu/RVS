@@ -1,0 +1,5 @@
+FROM mcr.microsoft.com/devcontainers/javascript-node:0-20
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive
+RUN yarn global add vercel
+WORKDIR "RVS/vis-portal"
+RUN yarn install
