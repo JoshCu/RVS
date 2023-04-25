@@ -1,7 +1,5 @@
 import {Open_Sans} from 'next/font/google';
 import Head from 'next/head';
-import {Provider} from 'react-redux';
-import {store} from '../store/store';
 import Form from './components/Form';
 import InputFormModal from './components/InputFormModal';
 
@@ -11,7 +9,6 @@ export default function Home() {
 
   return (
     <>
-      <Provider store={store}>
         <Head>
           <link rel="icon" href="/favicon.ico" />
         </Head>
@@ -24,7 +21,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </Provider>
     </>
   )
 }
