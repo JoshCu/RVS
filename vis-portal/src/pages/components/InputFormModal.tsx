@@ -1,6 +1,4 @@
-import { Button } from "@tremor/react";
 import { ChangeEvent, useState } from "react";
-import { FaSpinner } from "react-icons/fa";
 
 const InputFormModal = () => {
   const [showModal, setShowModal] = useState(false);
@@ -22,9 +20,29 @@ const InputFormModal = () => {
     }
   };
 
-  const handleFormSubmission = () => {
-    setShowEmailConfirmation(true);
+  const handleFormSubmission = async () => {
+    try {
+      const response = await fetch('/api/sendGrid', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sendTo: email,
+        }),
+      });
+
+      if (!response.ok) {
+        console.log(response);
+      }
+      
+      const json = await response.json();
+      setShowEmailConfirmation(true);
+    } catch (error) {
+      console.log(error);
+    }
   }
+
 
   const handleCloseModal = () => {
     setEmail("");
