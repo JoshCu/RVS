@@ -22,21 +22,42 @@ const InputFormModal = () => {
 
   const handleFormSubmission = async () => {
     try {
-      const response = await fetch('/api/sendGrid', {
+      const creatorResponse = await fetch('/api/upsertCreator', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          creatorId: email,
+        }),
+      });
+
+      if (!creatorResponse.ok) {
+        console.error(creatorResponse);
+        return;
+      }
+
+      const creatorData = await creatorResponse.json();
+      console.log(creatorData);
+      const creatorId = creatorData._id;
+
+      const emailResponse = await fetch('/api/sendGrid', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           sendTo: email,
+          verificationToken: creatorId
         }),
       });
 
-      if (!response.ok) {
-        console.log(response);
+      if (!emailResponse.ok) {
+        console.error(emailResponse);
+        return;
       }
       
-      const json = await response.json();
+      const json = await emailResponse.json();
       setShowEmailConfirmation(true);
     } catch (error) {
       console.log(error);

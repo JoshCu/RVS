@@ -11,6 +11,7 @@ export default async function handler(
   }
   sgMail.setApiKey(SENDGRID_API_KEY);
   const sendTo = req.body.sendTo;
+  const verificationToken = req.body.verificationToken;
 
   if (!sendTo) {
     res.status(400).json({ error: 'Email address required' });
@@ -21,7 +22,7 @@ export default async function handler(
     to: sendTo,
     from: 'visportal61@gmail.com',
     subject: 'API Token Request',
-    text: 'This is simply a test'
+    html: `<a href="http://localhost:3000/verify?token=${verificationToken}">Click here to verify your email</a>`
   };
 
   try {
