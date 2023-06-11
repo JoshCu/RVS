@@ -22,8 +22,22 @@ export default async function handler(
     to: sendTo,
     from: 'visportal61@gmail.com',
     subject: 'API Token Request',
-    html: `<a href="http://localhost:3000/verify?token=${verificationToken}">Click here to verify your email</a>`
-  };
+    html: `
+    <html>
+      <head>
+        <title>VisPortal</title>
+      </head>
+      <body style="text-align: center; font-family: Arial, sans-serif;">
+        <h1>Welcome to VisPortal!</h1>
+        <p>Click the link below to verify your email.</p>
+        <a href="http://localhost:3000/verify?token=${verificationToken}"
+          style="display: inline-block; padding: 10px 20px;">
+          Verify Your Email
+        </a>
+      </body>
+    </html>`
+};
+
 
   try {
     await sgMail.send(message);
