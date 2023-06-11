@@ -4,8 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {CartesianGrid, Legend, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from "recharts";
 import {setGames, setSelectedGameId} from '../../store/slices/gameSlice';
 import {setScores} from '../../store/slices/scoreSlice';
-import {setGrades} from '../../store/slices/testSlice';
-import {selectGame, selectGrade, selectScores, selectSelectedGameId} from '../../store/store';
+import {selectGame, selectScores, selectSelectedGameId} from '../../store/store';
 import {Game} from '../api/gameNames';
 
 const Form = () => {
@@ -20,7 +19,6 @@ const Form = () => {
 
   const visualizations = ['Pie Chart', 'Bar Chart', 'Scatter Chart'];
 
-  const grades = useSelector(selectGrade);
   const games = useSelector(selectGame);
   const selectedGameId = useSelector(selectSelectedGameId);
   const gameScores = useSelector(selectScores);
@@ -28,33 +26,38 @@ const Form = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    async function fetchGrades() {
-      const response = await fetch('/api/testGrade');
-      const json = await response.json();
-      dispatch(setGrades(json));
-    }
-
     async function fetchGames() {
       const response = await fetch('/api/gameNames');
       const json = await response.json();
       dispatch(setGames(json));
     }
 
-    fetchGrades();
     fetchGames();
 
   }, [dispatch]);
 
-  if (!grades) {
-    return <div>Loading...</div>;
-  }
-
   const handleGameTitleChange = async (selection: Game) => {
     if (selection._id !== selectedGameId) {
       dispatch(setSelectedGameId(selection._id));
-      const response = await fetch(`/api/gameScores?game_id=${selection._id}`);
-      const json = await response.json();
-      dispatch(setScores(json));
+
+      try {
+        const response = await fetch(`/api/gameScores?game_id=${selection._id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          }
+        });
+
+        if (!response.ok) {
+          console.log(response);
+        }
+
+        const json = await response.json();
+        dispatch(setScores(json));
+      } catch (error) {
+        console.log(error);
+      }
     }
     setCategoricalScores([]);
     setContinuousScores([]);
