@@ -38,7 +38,6 @@ const InputFormModal = () => {
       }
 
       const creatorData = await creatorResponse.json();
-      console.log(creatorData);
       const creatorId = creatorData._id;
 
       const emailResponse = await fetch('/api/sendGrid', {
