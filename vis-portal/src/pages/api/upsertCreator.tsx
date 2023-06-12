@@ -3,7 +3,7 @@ import clientPromise from '../../../lib/mongo/mongodb';
 
 export type Creator = {
   _id: string,
-  creatorId: string,
+  email: string,
   verified: boolean
 }
 
@@ -12,14 +12,14 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const creatorId = req.body.creatorId;
+    const email = req.body.email;
     const client = await clientPromise;
     const db = client.db("games_and_scores");
 
     const result = await db
       .collection("creators")
       .findOneAndUpdate(
-        { creatorId: creatorId },
+        { email: email },
         // always set verified to false as the user is in the process of re-verifying for their key
         { $set: { verified: false } },
         { upsert: true }

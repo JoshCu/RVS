@@ -28,7 +28,7 @@ const InputFormModal = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          creatorId: email,
+          email: email,
         }),
       });
 
