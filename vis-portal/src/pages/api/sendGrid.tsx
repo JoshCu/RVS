@@ -30,7 +30,7 @@ export default async function handler(
       <body style="text-align: center; font-family: Arial, sans-serif;">
         <h1>Welcome to VisPortal!</h1>
         <p>Click the link below to verify your email.</p>
-        <a href="http://localhost:3000/verify?token=${verificationToken}"
+        <a href="http://localhost:3000/creators/${verificationToken}"
           style="display: inline-block; padding: 10px 20px;">
           Verify Your Email
         </a>
