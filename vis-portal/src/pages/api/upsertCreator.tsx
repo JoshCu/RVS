@@ -22,10 +22,10 @@ export default async function handler(
       .findOneAndUpdate(
         { email: email },
         // always set verified to false as the user is in the process of re-verifying for their key
-        // apiKey is unset as any re-verifying user should not have this field until the process is complete
+        // creatorKey is unset as any re-verifying user should not have this field until the process is complete
         { 
           $set: { verified: false, verificationExpires: new Date(new Date().getTime() + 10 * 60000 ) },
-          $unset: { apiKey: "" }
+          $unset: { creatorKey: "" }
         },
         { upsert: true }
       );

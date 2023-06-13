@@ -21,16 +21,16 @@ export default async function handler(
     res.status(403).json({ message:"Verification code has already been used. Please generate a new one" });
   }
 
-  const apiKey = crypto.randomBytes(32).toString('hex');
+  const creatorKey = crypto.randomBytes(32).toString('hex');
   const bcrypt = require('bcrypt');
-  const hashedApiKey = await bcrypt.hash(apiKey, 10);
+  const hashedcreatorKey = await bcrypt.hash(creatorKey, 10);
 
   const updatedCreator = await db
     .collection("creators")
     .updateOne(
       { _id: new ObjectId(token) },
       { 
-        $set: { verified: true, apiKey: hashedApiKey },
+        $set: { verified: true, creatorKey: hashedcreatorKey },
         $unset: { verificationExpires: "" },
       },
       { upsert: false}
@@ -41,5 +41,5 @@ export default async function handler(
       return;
     }
 
-    res.status(200).json({ apiKey: apiKey });
+    res.status(200).json({ creatorKey: creatorKey });
 }

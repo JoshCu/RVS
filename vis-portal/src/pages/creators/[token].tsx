@@ -30,7 +30,7 @@ const VerificationHandler = () => {
           }
 
           const response = await verificationResponse.json();
-          setResponse(response.apiKey);
+          setResponse(response.creatorKey);
         } catch (error: any) {
           console.error(error);
         }

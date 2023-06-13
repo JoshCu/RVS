@@ -93,7 +93,7 @@ const InputFormModal = () => {
                 ) : (
                   <>
                     <div className="p-2">
-                      <p className="text-3xl text-center">Request API Key</p>
+                      <p className="text-3xl text-center">Request Creator Key</p>
                       <form className="mt-4 flex-grow">
                         <div className="mb-2">
                           <label htmlFor="email" className="block text-sm font-bold">
