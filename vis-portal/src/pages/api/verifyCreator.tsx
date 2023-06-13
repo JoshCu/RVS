@@ -30,7 +30,7 @@ export default async function handler(
     .updateOne(
       { _id: new ObjectId(token) },
       { 
-        $set: { verified: true, creatorKey: hashedcreatorKey },
+        $set: { verified: true, creatorKey: hashedcreatorKey, keyExpiry: new Date(new Date().getFullYear(), new Date().getMonth() + 3, new Date().getDate()) },
         $unset: { verificationExpires: "" },
       },
       { upsert: false}
