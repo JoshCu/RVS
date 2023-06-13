@@ -19,6 +19,10 @@ module.exports = {
                 "19/20": "95%",
             },
         },
+        screens: {
+            laptop: "1024px",
+            desktop: "1280px",
+        },
     },
     plugins: [],
 };

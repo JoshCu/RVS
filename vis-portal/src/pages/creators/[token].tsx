@@ -74,22 +74,24 @@ const VerificationHandler = () => {
             <h1 className="text-xl">{response}</h1>
           </div>
         ): (
-          <div className="w-2/3 lg:w-1/3">
-            <h1 className="text-2xl text-center font-bold">Thank you for becoming a verified creator on VisPortal!</h1>
-            <p className="text-lg mb-4 text-indigo-500 text-center">Here are the details of your new token:</p>
-            <ul className="list-disc list-inside mb-4">
-              <li>Your token expires in 3 months.</li>
-              <li>You can regenerate a new token as long as your school email is valid.</li>
-              <li>Each creator is allowed only one token.</li>
-            </ul>
-            <p className="text-lg mb-4 text-indigo-500 text-center">
-              Please keep your token secure and follow these guidelines:
-            </p>
-            <ul className="list-disc list-inside mb-4">
-              <li>We won't display your token again, so make sure to store it securely.</li>
-              <li>Do not share your token with others.</li>
-            </ul>
-            <div className="relative">
+          <div className="w-3/4 desktop:w-1/2">
+            <h1 className="text-2xl text-center font-bold pb-4">Thank you for becoming a verified creator on VisPortal!</h1>
+            <div className="mx-auto w-3/4">
+              <p className="text-lg mb-4 text-indigo-500">Here are the details of your new token:</p>
+              <ul className="list-disc list-inside mb-4">
+                <li>Your token expires in 3 months.</li>
+                <li>You can regenerate a new token as long as your school email is valid.</li>
+                <li>Each creator is allowed only one token.</li>
+              </ul>
+              <p className="text-lg mb-4 text-indigo-500">
+                Please keep your token secure and follow these guidelines:
+              </p>
+              <ul className="list-disc list-inside mb-4">
+                <li>We won't display your token again, so make sure to store it securely.</li>
+                <li>Do not share your token with others.</li>
+              </ul>
+            </div>
+            <div className="relative w-3/4 mx-auto">
               <input
                 ref={textFieldRef}
                 type="text"

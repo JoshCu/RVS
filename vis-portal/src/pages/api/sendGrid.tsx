@@ -21,7 +21,7 @@ export default async function handler(
   const message = {
     to: sendTo,
     from: 'visportal61@gmail.com',
-    subject: 'API Token Request',
+    subject: 'Creator Token Request',
     html: `
     <html>
       <head>
