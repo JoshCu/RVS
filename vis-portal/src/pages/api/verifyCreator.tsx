@@ -18,7 +18,7 @@ export default async function handler(
   if (!creator) {
     res.status(403).json({ message: "Invalid or expired token" });
   } else if (creator.verified == true) {
-    res.status(403).json({ message:"Verification code has already been used. Please generate a new one" });
+    res.status(403).json({ message:"Verification code has already been used. Please generate a new one." });
   }
 
   const creatorKey = crypto.randomBytes(32).toString('hex');
