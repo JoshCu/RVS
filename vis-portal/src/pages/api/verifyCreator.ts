@@ -28,7 +28,7 @@ export default async function handler(
 
   const creatorKey = crypto.randomBytes(32).toString('hex');
   const bcrypt = require('bcrypt');
-  const hashedcreatorKey = await bcrypt.hash(creatorKey, 10);
+  const hashedCreatorKey = await bcrypt.hash(creatorKey, 10);
 
   const updatedCreator = await db
     .collection("creators")
@@ -39,7 +39,7 @@ export default async function handler(
       { 
         $set: { 
           verified: true,
-          creator_key: hashedcreatorKey,
+          creator_key: hashedCreatorKey,
           key_expiry: new Date(new Date().getFullYear(), new Date().getMonth() + 3, new Date().getDate()) 
         },
         $unset: {
