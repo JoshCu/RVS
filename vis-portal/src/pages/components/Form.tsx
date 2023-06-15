@@ -5,7 +5,7 @@ import {CartesianGrid, Legend, Scatter, ScatterChart, Tooltip, XAxis, YAxis} fro
 import {setGames, setSelectedGameId} from '../../store/slices/gameSlice';
 import {setScores} from '../../store/slices/scoreSlice';
 import {selectGame, selectScores, selectSelectedGameId} from '../../store/store';
-import {Game} from '../api/gameNames';
+import {Game} from '../api/games';
 
 const Form = () => {
   const [visualizationType, setVisualizationType] = useState("");
@@ -27,7 +27,7 @@ const Form = () => {
 
   useEffect(() => {
     async function fetchGames() {
-      const response = await fetch('/api/gameNames');
+      const response = await fetch('/api/games');
       const json = await response.json();
       dispatch(setGames(json));
     }
