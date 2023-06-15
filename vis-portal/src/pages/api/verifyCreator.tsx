@@ -8,6 +8,11 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const token = req.body.token;
+  if (!token) {
+    res.status(403).json({ message: "Invalid request" });
+    return;
+  }
+
   const client = await clientPromise;
   const db = client.db("games_and_scores");
 
@@ -28,12 +33,22 @@ export default async function handler(
   const updatedCreator = await db
     .collection("creators")
     .updateOne(
-      { _id: new ObjectId(token) },
       { 
-        $set: { verified: true, creatorKey: hashedcreatorKey, keyExpiry: new Date(new Date().getFullYear(), new Date().getMonth() + 3, new Date().getDate()) },
-        $unset: { verificationExpires: "" },
+        _id: new ObjectId(token)
       },
-      { upsert: false}
+      { 
+        $set: { 
+          verified: true,
+          creatorKey: hashedcreatorKey,
+          keyExpiry: new Date(new Date().getFullYear(), new Date().getMonth() + 3, new Date().getDate()) 
+        },
+        $unset: {
+          verificationExpires: ""
+        },
+      },
+      {
+        upsert: false
+      }
     );
   
     if (updatedCreator.modifiedCount == 0) {
