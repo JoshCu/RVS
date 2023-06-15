@@ -5,7 +5,7 @@ export type Creator = {
   _id: string,
   email: string,
   verified: boolean,
-  verificationExpires: Date
+  verification_expiry: Date
 }
 
 export default async function handler(
@@ -37,12 +37,12 @@ export default async function handler(
           // always set verified to false as the user is in the process of re-verifying for their key
           $set: {
             verified: false,
-            verificationExpires: new Date(new Date().getTime() + 10 * 60000 )
+            verification_expiry: new Date(new Date().getTime() + 10 * 60000 )
           },
           // creatorKey and keyExpiry are unset as any re-verifying user should not have these fields until the process is complete
           $unset: {
-            creatorKey: "",
-            keyExpiry: ""
+            creator_key: "",
+            key_expiry: ""
           }
         },
         {

@@ -39,11 +39,11 @@ export default async function handler(
       { 
         $set: { 
           verified: true,
-          creatorKey: hashedcreatorKey,
-          keyExpiry: new Date(new Date().getFullYear(), new Date().getMonth() + 3, new Date().getDate()) 
+          creator_key: hashedcreatorKey,
+          key_expiry: new Date(new Date().getFullYear(), new Date().getMonth() + 3, new Date().getDate()) 
         },
         $unset: {
-          verificationExpires: ""
+          verification_expiry: ""
         },
       },
       {
@@ -56,5 +56,5 @@ export default async function handler(
       return;
     }
 
-    res.status(200).json({ creatorKey: creatorKey });
+    res.status(200).json({ creator_key: creatorKey });
 }

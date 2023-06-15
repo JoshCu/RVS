@@ -7,7 +7,6 @@ export default async function handler(
   res: NextApiResponse<Record<string, any>[]>
 ) {
   var gameId = req.query.game_id;
-  console.log(gameId);
 
   if (!gameId) {
     res.status(400).json([]);

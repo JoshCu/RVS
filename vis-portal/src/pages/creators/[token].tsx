@@ -34,7 +34,7 @@ const VerificationHandler = () => {
           }
 
           const response = await verificationResponse.json();
-          setResponse(response.creatorKey);
+          setResponse(response.creator_key);
           setLoading(false);
         } catch (error: any) {
           console.error(error);
