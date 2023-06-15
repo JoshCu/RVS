@@ -35,11 +35,11 @@ export default async function handler(
         },
         {
           // always set verified to false as the user is in the process of re-verifying for their key
-          // creatorKey and keyExpiry are unset as any re-verifying user should not have these fields until the process is complete
           $set: {
             verified: false,
             verificationExpires: new Date(new Date().getTime() + 10 * 60000 )
           },
+          // creatorKey and keyExpiry are unset as any re-verifying user should not have these fields until the process is complete
           $unset: {
             creatorKey: "",
             keyExpiry: ""
