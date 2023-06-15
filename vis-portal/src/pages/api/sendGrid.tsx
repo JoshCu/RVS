@@ -10,11 +10,21 @@ export default async function handler(
       throw new Error('Missing SENDGRID_API_KEY environment variable');
   }
   sgMail.setApiKey(SENDGRID_API_KEY);
-  const sendTo = req.body.sendTo;
-  const verificationToken = req.body.verificationToken;
 
+  const sendTo = req.body.sendTo;
   if (!sendTo) {
-    res.status(400).json({ error: 'Email address required' });
+    res.status(400).json({ message: "No email provided" });
+    return;
+  }
+  const emailRegex = /^[a-zA-Z]{2,3}\d+@uakron\.edu$/;
+  if (!emailRegex.test(sendTo)) {
+    res.status(403).json({ message: "Invalid request" });
+    return;
+  }
+
+  const verificationToken = req.body.verificationToken;
+  if (!verificationToken) {
+    res.status(403).json({ error: 'Invalid request' });
     return;
   }
 
