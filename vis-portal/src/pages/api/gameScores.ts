@@ -23,7 +23,7 @@ export default async function handler(
 
     const scores: Record<string, any>[] = await db
       .collection("scores")
-      .find({ "game_id": new ObjectId(gameId) }, { projection: { _id: 0, player_id: 0, game_id: 0} })
+      .find({ "game_id": new ObjectId(gameId) }, { projection: { _id: 0, game_id: 0} })
       .limit(40)
       .toArray();
     
