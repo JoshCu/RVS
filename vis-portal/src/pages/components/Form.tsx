@@ -55,22 +55,36 @@ const Form = () => {
 
         const json = await response.json();
         dispatch(setScores(json));
+
+        const game = games.find(g => g._id === selection._id);
+        const categoricalVars = [];
+        const continuousVars = [];
+        if (game) {
+          for (var [key, value] of Object.entries(game.score_requirements)) {
+            if (value == 'string' || value == 'boolean') {
+              categoricalVars.push(key);
+            } else {
+              continuousVars.push(key);
+            }
+          }
+        }
+        console.log(categoricalVars);
+        console.log(continuousVars);
+
+        setCategoricalScores(categoricalVars);
+        setContinuousScores(continuousVars);
+        setParameter1("");
+        setParameter2("");
+        setSubmit(false);
+        setVisualizationType("");
       } catch (error) {
         console.log(error);
       }
     }
-    setCategoricalScores([]);
-    setContinuousScores([]);
-    setParameter1("");
-    setParameter2("");
-    setSubmit(false);
-    setVisualizationType("");
   }
 
   const handleVisualizationTypeChange = async (selection: string) => {
     if (selection !== visualizationType) {
-      setCategoricalScores([]);
-      setContinuousScores([]);
       setParameter1("");
       setParameter2("");
       setSubmit(false);
@@ -90,22 +104,6 @@ const Form = () => {
           setField2("Y-Axis");
           break;
       }
-
-      const categoricalVars = [];
-      const continuousVars = [];
-
-      // Iterate over the object's properties
-      for (const [key, value] of Object.entries(gameScores[0])) {
-        // Check if the value is a number
-        if (typeof value === 'number') {
-          continuousVars.push(key);
-        } else {
-          categoricalVars.push(key);
-        }
-      }
-
-      setCategoricalScores(categoricalVars);
-      setContinuousScores(continuousVars);
     } else {
       setSubmit(true);
     }

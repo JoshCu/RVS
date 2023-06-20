@@ -3,7 +3,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface Game {
   _id: string;
   name: string;
-  creator: string;
+  score_requirements: Object;
+  creator_id: string;
 }
 
 interface GameState {
