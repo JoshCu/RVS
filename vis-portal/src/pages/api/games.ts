@@ -23,9 +23,12 @@ export default async function handler(
     const gamesWithIdAsString = games.map(game => ({
       _id: game._id.toString(),
       name: game.name,
-      score_requirements: game.score_requirements
+      score_requirements: {
+        ...game.score_requirements,
+        player_name: "string"
+      }
     }));
-    
+
     res.status(200).json(gamesWithIdAsString);
   } catch (e) {
     console.error(e);

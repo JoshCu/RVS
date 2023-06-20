@@ -1,10 +1,11 @@
-import {BarChart, DonutChart, Dropdown, DropdownItem, Text, Title} from "@tremor/react";
+import {BarChart, DonutChart, Dropdown, DropdownItem, Text, Title, MultiSelectBox, MultiSelectBoxItem} from "@tremor/react";
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {CartesianGrid, Legend, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from "recharts";
 import {setGames, setSelectedGameId} from '../../store/slices/gameSlice';
 import {setScores} from '../../store/slices/scoreSlice';
-import {selectGame, selectScores, selectSelectedGameId} from '../../store/store';
+import {setPlayers} from "@/store/slices/playerSlice";
+import {selectGame, selectScores, selectSelectedGameId, selectPlayers} from '../../store/store';
 import {Game} from '../api/games';
 
 const Form = () => {
@@ -22,6 +23,8 @@ const Form = () => {
   const games = useSelector(selectGame);
   const selectedGameId = useSelector(selectSelectedGameId);
   const gameScores = useSelector(selectScores);
+  const [filteredScores, setFilteredScores] = useState(gameScores);
+  const players = useSelector(selectPlayers);
 
   const dispatch = useDispatch();
 
@@ -41,7 +44,7 @@ const Form = () => {
       dispatch(setSelectedGameId(selection._id));
 
       try {
-        const response = await fetch(`/api/gameScores?game_id=${selection._id}`, {
+        const gameResponse = await fetch(`/api/gameInfo?game_id=${selection._id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -49,12 +52,14 @@ const Form = () => {
           }
         });
 
-        if (!response.ok) {
-          console.log(response);
+        if (!gameResponse.ok) {
+          console.log(gameResponse);
         }
 
-        const json = await response.json();
-        dispatch(setScores(json));
+        const gameJson = await gameResponse.json();
+        dispatch(setScores(gameJson.scores));
+        dispatch(setPlayers(gameJson.players));
+        setFilteredScores(gameJson.scores);
 
         const game = games.find(g => g._id === selection._id);
         const categoricalVars = [];
@@ -68,8 +73,6 @@ const Form = () => {
             }
           }
         }
-        console.log(categoricalVars);
-        console.log(continuousVars);
 
         setCategoricalScores(categoricalVars);
         setContinuousScores(continuousVars);
@@ -108,6 +111,16 @@ const Form = () => {
       setSubmit(true);
     }
   };
+
+  const filterScoresByPlayerId = (playerIds: string[]) => {
+    var filteredScores = [];
+    if (playerIds.length > 0) {
+      filteredScores = gameScores.filter(score => playerIds.includes(score.player_id));
+    } else {
+      filteredScores = gameScores;
+    }
+    setFilteredScores(filteredScores);
+  }
 
   const handleOnSubmit = () => {
     setSubmit(true);
@@ -188,6 +201,22 @@ const Form = () => {
                   ))}
                 </Dropdown>
               </div>
+              {parameter1 === "player_name" && (
+                <div className="mb-4">
+                  <Text className="block font-bold text-black text-base mb-2">Filter By Players</Text>
+                  <MultiSelectBox
+                    placeholder="All players"
+                    onValueChange={(e) => {
+                      const playerIds = e.map(value => JSON.parse(value).player_id);
+                      filterScoresByPlayerId(playerIds);
+                    }}
+                  >
+                    {players.map((player, index) => (
+                      <MultiSelectBoxItem key={index} value={JSON.stringify(player)} text={player.player_name + ' (' + player.player_id + ')'} />
+                    ))}
+                  </MultiSelectBox>
+                </div>
+              )}
               <div className="mb-4">
                 <Text className="text-black font-bold text-base">{field2}</Text>
                 <Dropdown
@@ -261,7 +290,7 @@ const Form = () => {
                 <Title mt-='15px'>{parameter2} by {parameter1}</Title>
                 <BarChart
                   className="mt-6 h-2/3 w-full m-auto"
-                  data={gameScores}
+                  data={filteredScores}
                   index={parameter1}
                   categories={[parameter2]}
                   colors={["blue"]}
