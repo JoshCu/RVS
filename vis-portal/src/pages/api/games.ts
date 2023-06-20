@@ -4,7 +4,6 @@ import clientPromise from '../../../lib/mongo/mongodb';
 export type Game = {
   _id: string,
   name: string,
-  creator: string,
   score_requirements: Object
 }
 
@@ -18,13 +17,12 @@ export default async function handler(
 
     const games = await db
       .collection("games")
-      .find({})
+      .find({}, { projection: { creator_id: 0 } })
       .toArray();
     
     const gamesWithIdAsString = games.map(game => ({
       _id: game._id.toString(),
       name: game.name,
-      creator: game.creator,
       score_requirements: game.score_requirements
     }));
     

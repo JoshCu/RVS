@@ -32,11 +32,15 @@ export default async function authenticationHandler(
     const bcrypt = require('bcrypt');
     const isMatch = await bcrypt.compare(creatorKey, creator.creator_key);
     const currentDate = new Date();
-    const isExpired = currentDate > creator.key_expiry;
 
-    if (!isMatch || isExpired) {
-        res.status(403).json({ message: "Invalid or expired creator key" });
-        return false;
+    if (!isMatch) {
+      res.status(403).json({ message: "Invalid creator key" });
+      return false;
+    }
+
+    if (currentDate > creator.key_expiry) {
+      res.status(403).json({ message: "Creator key is expired. Please generate a new one." });
+      return false;
     }
 
     return creator;

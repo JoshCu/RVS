@@ -30,6 +30,9 @@ export default async function handler(
   const bcrypt = require('bcrypt');
   const hashedCreatorKey = await bcrypt.hash(creatorKey, 10);
 
+  const expiryDate = new Date();
+  expiryDate.setMonth(expiryDate.getMonth() + 3);
+
   const updatedCreator = await db
     .collection("creators")
     .updateOne(
@@ -40,7 +43,7 @@ export default async function handler(
         $set: { 
           verified: true,
           creator_key: hashedCreatorKey,
-          key_expiry: new Date(new Date().getFullYear(), new Date().getMonth() + 3, new Date().getDate()) 
+          key_expiry: expiryDate 
         },
         $unset: {
           verification_expiry: ""
