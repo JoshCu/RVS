@@ -18,7 +18,6 @@ export default async function handler(
   }
 
   try {
-    console.log(gameId);
     const client = await clientPromise;
     const db = client.db("games_and_scores");
 

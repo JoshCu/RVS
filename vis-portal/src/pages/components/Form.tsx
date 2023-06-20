@@ -96,7 +96,6 @@ const Form = () => {
 
       // Iterate over the object's properties
       for (const [key, value] of Object.entries(gameScores[0])) {
-        console.log(typeof (value))
         // Check if the value is a number
         if (typeof value === 'number') {
           continuousVars.push(key);
@@ -107,7 +106,6 @@ const Form = () => {
 
       setCategoricalScores(categoricalVars);
       setContinuousScores(continuousVars);
-      console.log(continuousScores)
     } else {
       setSubmit(true);
     }
