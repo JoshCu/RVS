@@ -92,6 +92,7 @@ const Form = () => {
       setParameter2("");
       setSubmit(false);
       setVisualizationType(selection);
+      setFilteredScores(gameScores);
 
       switch (selection) {
         case 'Pie Chart':
@@ -174,17 +175,33 @@ const Form = () => {
             </Dropdown>
           </div>
           {visualizationType === "Pie Chart" && (
-            <div className="mb-4">
-              <Text className="text-black font-bold text-base">{field1}</Text>
-              <Dropdown
-                className="mt-2"
-                onValueChange={(e) => handleFieldOneChange(e)}
-                placeholder={`Select a parameter for ${field1}`}
-              >
-                {continuousScores.map((continuousScore, index) => (
-                  <DropdownItem key={index} value={continuousScore.toString()} text={continuousScore.toString()} />
-                ))}
-              </Dropdown>
+            <div>
+              <div className="mb-4">
+                <Text className="text-black font-bold text-base">{field1}</Text>
+                <Dropdown
+                  className="mt-2"
+                  onValueChange={(e) => handleFieldOneChange(e)}
+                  placeholder={`Select a parameter for ${field1}`}
+                >
+                  {continuousScores.map((continuousScore, index) => (
+                    <DropdownItem key={index} value={continuousScore.toString()} text={continuousScore.toString()} />
+                  ))}
+                </Dropdown>
+              </div>
+              <div className="mb-4">
+                <Text className="block font-bold text-black text-base mb-2">Filter By Players</Text>
+                <MultiSelectBox
+                  placeholder="All players"
+                  onValueChange={(e) => {
+                    const playerIds = e.map(value => JSON.parse(value).player_id);
+                    filterScoresByPlayerId(playerIds);
+                  }}
+                >
+                  {players.map((player, index) => (
+                    <MultiSelectBoxItem key={index} value={JSON.stringify(player)} text={player.player_name + ' (' + player.player_id + ')'} />
+                  ))}
+                </MultiSelectBox>
+              </div>
             </div>
           )}
           {visualizationType === "Bar Chart" && (
@@ -279,7 +296,7 @@ const Form = () => {
                 <Title mt-='15px'>{parameter1} grouped by player_name</Title>
                 <DonutChart
                   className="mt-6 h-2/3 w-2/3 m-auto"
-                  data={gameScores}
+                  data={filteredScores}
                   category={parameter1}
                   index="player_name"
                 />
