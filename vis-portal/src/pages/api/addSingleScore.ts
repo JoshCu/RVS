@@ -56,7 +56,7 @@ export default async function handler(
       const score = req.body.score;
       for (const metric of Object.keys(score)) {
         if (!scoreRequirements.hasOwnProperty(metric) || typeof score[metric] !== scoreRequirements[metric]) {
-          res.status(400).json({ message: 'The provided score violates the requirements specified by the game. Please adjust your request accordingly.' });
+          res.status(400).json({ message: "The provided score violates the requirements specified by the game. Please adjust your request accordingly." });
           return;
         }
       }
