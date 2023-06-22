@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import sgMail from '@sendgrid/mail';
+import clientPromise from '../../../lib/mongo/mongodb';
+import { ObjectId } from 'mongodb';
 
 export default async function handler(
   req: NextApiRequest,
@@ -25,6 +27,17 @@ export default async function handler(
   const verificationToken = req.body.verificationToken;
   if (!verificationToken) {
     res.status(403).json({ error: 'Invalid request' });
+    return;
+  }
+
+  const client = await clientPromise;
+  const db = client.db("games_and_scores");
+  const creator = await db
+    .collection("creators")
+    .findOne({ _id: new ObjectId(verificationToken) });
+  
+  if (!creator) {
+    res.status(403).json({ error: "Request blocked"});
     return;
   }
 
