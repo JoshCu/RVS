@@ -31,12 +31,14 @@ export default async function handler(
     const client = await clientPromise;
     const db = client.db("games_and_scores");
 
+    // find the first 40 scores for the requested game
     const scores: Record<string, any>[] = await db
       .collection("scores")
       .find({ "game_id": new ObjectId(gameId) }, { projection: { _id: 0, game_id: 0} })
       .limit(40)
       .toArray();
     
+    // find the distinct set of players associated with the first 40 scores
     const players = scores.reduce<Player[]>((acc, score) => {
       if (!acc.find(player => player.player_id === score.player_id)) {
         acc.push({ player_id: score.player_id, player_name: score.player_name });
