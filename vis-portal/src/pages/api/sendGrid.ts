@@ -9,25 +9,22 @@ export default async function handler(
 ) {
   const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
   if (!SENDGRID_API_KEY) {
-      throw new Error('Missing SENDGRID_API_KEY environment variable');
+      throw new Error("Missing SENDGRID_API_KEY environment variable");
   }
   sgMail.setApiKey(SENDGRID_API_KEY);
 
   const sendTo = req.body.sendTo;
   if (!sendTo) {
-    res.status(400).json({ message: "No email provided" });
-    return;
+    return res.status(400).json({ message: "No email provided" });
   }
   const emailRegex = /^[a-zA-Z]{2,3}\d+@uakron\.edu$/;
   if (!emailRegex.test(sendTo)) {
-    res.status(403).json({ message: "Invalid request" });
-    return;
+    return res.status(403).json({ message: "Invalid request" });
   }
 
   const verificationToken = req.body.verificationToken;
   if (!verificationToken) {
-    res.status(403).json({ message: "Invalid request" });
-    return;
+    return res.status(403).json({ message: "Invalid request" });
   }
 
   const client = await clientPromise;
@@ -37,8 +34,7 @@ export default async function handler(
     .findOne({ _id: new ObjectId(verificationToken) });
   
   if (!creator) {
-    res.status(403).json({ error: "Request blocked"});
-    return;
+    return res.status(403).json({ message: "Request blocked"});
   }
 
   const message = {
@@ -66,9 +62,9 @@ export default async function handler(
 
   try {
     await sgMail.send(message);
-    res.status(200).json({ success: true });
+    return res.status(200).json({ success: true });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error sending email' });
+    return res.status(500).json({ message: "Error sending email" });
   }
 }

@@ -9,8 +9,7 @@ export default async function handler(
 ) {
   const token = req.body.token;
   if (!token) {
-    res.status(403).json({ message: "Invalid request" });
-    return;
+    return res.status(403).json({ message: "Invalid request" });
   }
 
   const client = await clientPromise;
@@ -21,9 +20,9 @@ export default async function handler(
     .findOne({ _id: new ObjectId(token) });
   
   if (!creator) {
-    res.status(403).json({ message: "Invalid or expired token" });
+    return res.status(403).json({ message: "Invalid or expired token" });
   } else if (creator.verified == true) {
-    res.status(403).json({ message:"Verification code has already been used. Please generate a new one." });
+    return res.status(403).json({ message:"Verification code has already been used. Please generate a new one." });
   }
 
   const creatorKey = crypto.randomBytes(32).toString('hex');
@@ -55,9 +54,8 @@ export default async function handler(
     );
   
     if (updatedCreator.modifiedCount == 0) {
-      res.status(500).json({ message: "An error occurred while verifying your account" });
-      return;
+      return res.status(500).json({ message: "An error occurred while verifying your account" });
     }
 
-    res.status(200).json({ creator_key: creatorKey });
+    return res.status(200).json({ creator_key: creatorKey });
 }

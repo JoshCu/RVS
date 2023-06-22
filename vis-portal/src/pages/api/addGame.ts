@@ -13,35 +13,30 @@ export default async function handler(
 
     const creator = await authenticationHandler(req, res);
     if (!creator) {
-      res.status(403).json({ message: "Access denied"} );
-      return;
+      return res.status(403).json({ message: "Access denied"} );
     }
 
     if (!requestValidator(req.body, validFields)) {
-      res.status(400).json({ message: "Invalid request body. Please only provide name and score_requirements" });
-      return;
+      return res.status(400).json({ message: "Invalid request body. Please only provide name and score_requirements" });
     }
 
     const game = req.body;
     if (!game.hasOwnProperty('name')) {
-      res.status(400).json({ message: "name field was not provided" });
-      return;
+      return res.status(400).json({ message: "name field was not provided" });
     } else if (!game.hasOwnProperty('score_requirements')) {
-      res.status(400).json({ message: "score_requirements field was not provided" });
-      return;
+      return res.status(400).json({ message: "score_requirements field was not provided" });
     }
 
     const scoreRequirements = game.score_requirements;
     if (Object.keys(scoreRequirements).length < 2) {
-      res.status(400).json({ message: "Please provide at least two scoring parameters for visualization" });
+      return res.status(400).json({ message: "Please provide at least two scoring parameters for visualization" });
     }
     
     const allowedTypes = ['string', 'number', 'boolean'];
     for (let key of Object.keys(scoreRequirements)) {
       const type = scoreRequirements[key];
       if (typeof type !== "string" || !allowedTypes.includes(type)) {
-        res.status(400).json({ message: `Invalid type for score requirement ${key}. Allowed types are: ${allowedTypes.join(', ')}` });
-        return;
+        return res.status(400).json({ message: `Invalid type for score requirement ${key}. Allowed types are: ${allowedTypes.join(', ')}` });
       }
     }
 
@@ -55,13 +50,13 @@ export default async function handler(
       .collection("games")
       .insertOne(game)
 
-    res.status(200).json({ message: "Game was successfully added", _id: result.insertedId });
+    return res.status(200).json({ message: "Game was successfully added", _id: result.insertedId });
   } catch (e) {
     console.error(e);
     if (e instanceof MongoError && e.code === 11000) {
-      res.status(409).json({ message: "Game name already exists" });
+      return res.status(409).json({ message: "Game name already exists" });
     } else {
-      res.status(500).json({ message: "An unexpected error occurred when adding the game"});
+      return res.status(500).json({ message: "An unexpected error occurred when adding the game"});
     }
   }
 }

@@ -19,8 +19,7 @@ export default async function handler(
   var gameId = req.query.game_id;
 
   if (!gameId) {
-    res.status(400).json({ message: 'Game ID is required' });
-    return;
+    return res.status(400).json({ message: 'Game ID is required' });
   }
 
   if (Array.isArray(gameId)) {
@@ -46,8 +45,9 @@ export default async function handler(
       return acc;
     }, []);
     
-    res.status(200).json({scores, players});
+    return res.status(200).json({scores, players});
   } catch (e) {
     console.error(e);
+    return res.status(500).json({ message: "An unexpected error occurred when collecting game info"});
   }
 }

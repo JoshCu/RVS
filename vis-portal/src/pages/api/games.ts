@@ -9,7 +9,7 @@ export type Game = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Game[]>
+  res: NextApiResponse<Game[] | { message: string }>
 ) {
   try {
     const client = await clientPromise;
@@ -29,8 +29,9 @@ export default async function handler(
       }
     }));
 
-    res.status(200).json(gamesWithIdAsString);
+    return res.status(200).json(gamesWithIdAsString);
   } catch (e) {
     console.error(e);
+    return res.status(500).json({ message: "An unexpected error occurred when finding games"});
   }
 }

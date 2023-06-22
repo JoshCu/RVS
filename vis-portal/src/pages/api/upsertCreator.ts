@@ -15,13 +15,11 @@ export default async function handler(
   try {
     const email = req.body.email;
     if (!email) {
-      res.status(400).json({ message: "No email provided" });
-      return;
+      return res.status(400).json({ message: "No email provided" });
     }
     const emailRegex = /^[a-zA-Z]{2,3}\d+@uakron\.edu$/;
     if (!emailRegex.test(email)) {
-      res.status(403).json({ message: "Invalid request" });
-      return;
+      return res.status(403).json({ message: "Invalid request" });
     }
     
     const client = await clientPromise;
@@ -51,12 +49,12 @@ export default async function handler(
       );
     
       if (result.value) {
-        res.status(200).json({ _id: result.value._id.toString() });
+        return res.status(200).json({ _id: result.value._id.toString() });
       } else {
         throw new Error('Unable to perform upsert operation');
       }
   } catch (e) {
     console.error(e);
-    res.status(500).json({ message: "An error occurred while processing your request."});
+    return res.status(500).json({ message: "An error occurred while processing your request."});
   }
 }
