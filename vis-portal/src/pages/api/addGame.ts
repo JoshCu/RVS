@@ -2,15 +2,23 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongo/mongodb';
 import { MongoError } from 'mongodb';
 import authenticationHandler from '../authentication/authenticationHandler';
+import requestValidator from '../authentication/requestValidator';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
+    const validFields = ['name', 'score_requirements'];
+
     const creator = await authenticationHandler(req, res);
     if (!creator) {
       res.status(403).json({ message: "Access denied"} );
+      return;
+    }
+
+    if (!requestValidator(req.body, validFields)) {
+      res.status(400).json({ message: "Invalid request body. Please only provide name and score_requirements" });
       return;
     }
 

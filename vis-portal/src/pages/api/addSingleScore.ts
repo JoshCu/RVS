@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongo/mongodb';
 import authenticationHandler from '../authentication/authenticationHandler';
+import requestValidator from '../authentication/requestValidator';
 import { ObjectId } from 'mongodb';
 
 export default async function handler(
@@ -8,9 +9,16 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
+    const validFields = ['game', 'player_name', 'player_id', 'score'];
+
     const creator = await authenticationHandler(req, res);
     if (!creator) {
       res.status(403).json({ message: "Access denied" });
+      return;
+    }
+
+    if (!requestValidator(req.body, validFields)) {
+      res.status(400).json({ message: "Invalid request body. Please only provide game, player_name, player_id, and score" });
       return;
     }
 
