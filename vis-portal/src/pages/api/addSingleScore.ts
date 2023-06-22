@@ -13,31 +13,26 @@ export default async function handler(
 
     const creator = await authenticationHandler(req, res);
     if (!creator) {
-      res.status(403).json({ message: "Access denied" });
-      return;
+      return res.status(403).json({ message: "Access denied" });
     }
 
     if (!requestValidator(req.body, validFields)) {
-      res.status(400).json({ message: "Invalid request body. Please only provide game, player_name, player_id, and score" });
-      return;
+      return res.status(400).json({ message: "Invalid request body. Please only provide game, player_name, player_id, and score" });
     }
 
     const gameName = req.body.game;
     if (!gameName) {
-      res.status(400).json({ message: "No game name provided" });
-      return;
+      return res.status(400).json({ message: "No game name provided" });
     }
 
     // verify that player_name and player_id are provided as they are required fields
     const playerName = req.body.player_name;
     if (!playerName) {
-      res.status(400).json({ message: "Required field player_name not provided" });
-      return;
+      return res.status(400).json({ message: "Required field player_name not provided" });
     }
     const playerId = req.body.player_id;
     if (!playerId) {
-      res.status(400).json({ message: "Required field player_id not provided" });
-      return;
+      return res.status(400).json({ message: "Required field player_id not provided" });
     }
 
     const client = await clientPromise;
@@ -53,8 +48,7 @@ export default async function handler(
       const gameCreatorId = creator._id.toString();
       const scoreCreatorId = game.creator_id.toString();
       if (scoreCreatorId != gameCreatorId) {
-        res.status(403).json({ message: "Cannot add scores for a game unless you created it" });
-        return;
+        return res.status(403).json({ message: "Cannot add scores for a game unless you created it" });
       }
 
       // find the score requirements for the requested game
@@ -62,10 +56,17 @@ export default async function handler(
 
       // validate that the number and types of fields provided align with the score requirements
       const score = req.body.score;
+      if (!score || typeof score !== 'object' || Array.isArray(score)) {
+        return res.status(400).json({ message: "The score was not provided or is not an object." });
+      }
+
+      if (Object.keys(score).length < Object.keys(scoreRequirements).length) {
+        return res.status(400).json({ message: `Too few metrics provided for score. Please adjust your score to include all metrics specified by ${game.name}`})
+      }
+
       for (const metric of Object.keys(score)) {
         if (!scoreRequirements.hasOwnProperty(metric) || typeof score[metric] !== scoreRequirements[metric]) {
-          res.status(400).json({ message: "The provided score violates the requirements specified by the game. Please adjust your request accordingly." });
-          return;
+          return res.status(400).json({ message: "The provided score violates the requirements specified by the game. Please adjust your request accordingly." });
         }
       }
 
@@ -82,13 +83,12 @@ export default async function handler(
         .insertOne(scoreToInsert);
 
     } else {
-      res.status(400).json({ message: "Invalid game ID" });
-      return;
+      return res.status(400).json({ message: "Invalid game ID" });
     }
 
-    res.status(200).json({ message: "Score was successfully added!" });
+    return res.status(200).json({ message: "Score was successfully added!" });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ message: "An unexpected error occurred when adding the score"});
+    return res.status(500).json({ message: "An unexpected error occurred when adding the score"});
   }
 }
