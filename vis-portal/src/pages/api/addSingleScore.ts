@@ -27,11 +27,11 @@ export default async function handler(
 
     // verify that player_name and player_id are provided as they are required fields
     const playerName = req.body.player_name;
-    if (!playerName) {
+    if (!playerName || typeof playerName !== 'string') {
       return res.status(400).json({ message: "Required field player_name not provided" });
     }
     const playerId = req.body.player_id;
-    if (!playerId) {
+    if (!playerId || typeof playerId !== 'string') {
       return res.status(400).json({ message: "Required field player_id not provided" });
     }
 
@@ -57,7 +57,7 @@ export default async function handler(
       // validate that the number and types of fields provided align with the score requirements
       const score = req.body.score;
       if (!score || typeof score !== 'object' || Array.isArray(score)) {
-        return res.status(400).json({ message: "The score was not provided or is not an object." });
+        return res.status(400).json({ message: "The score was not provided or is not an object" });
       }
 
       if (Object.keys(score).length < Object.keys(scoreRequirements).length) {
