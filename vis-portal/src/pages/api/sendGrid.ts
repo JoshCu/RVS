@@ -26,7 +26,7 @@ export default async function handler(
 
   const verificationToken = req.body.verificationToken;
   if (!verificationToken) {
-    res.status(403).json({ error: 'Invalid request' });
+    res.status(403).json({ message: "Invalid request" });
     return;
   }
 
