@@ -38,6 +38,8 @@ const VerificationHandler = () => {
           setLoading(false);
         } catch (error: any) {
           console.error(error);
+          setError(true);
+          setResponse("An error occurred when processing your verification. Please try again.");
           setLoading(false);
         }
       }
