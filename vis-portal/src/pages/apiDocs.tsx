@@ -90,20 +90,30 @@ const APIDocs = () => {
             <ul className="list-disc list-inside">
               <li>Adds a list of scores to the corresponding game</li>
               <li>In the header of the request, include your <strong>email</strong> and <strong>creator token</strong></li>
-              <li>The body of the request should include 'game' and 'scores' which includes an array of scores which follow the format used for adding a single score</li>
+              <li>The body of the request should include 'game' and 'scores' which includes an array of scores which follow the format used for adding a single score (minus the 'game' field)</li>
               <li><strong>Note:</strong> only the game's creator is authorized to add scores for their game</li>
               <li>Sample request body:</li>
             </ul>
             <pre className="flex justify-center">
     <code>
         {`{
-    "game": "binary boss",
+    "game": "Delta Droids",
     "scores" [
       {
-        // score 1
+        "player_name": "John Miller",
+        "player_id": "jbm1",
+        "score": {
+          "level": 1,
+          "score": 25
+        }
       },
       {
-        // score 2
+        "player_name": "John Miller",
+        "player_id": "jbm1",
+        "score": {
+          "level": 2,
+          "score": 50
+        }
       },
       etc...
     ]
