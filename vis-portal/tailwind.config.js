@@ -17,6 +17,10 @@ module.exports = {
             height: {
                 "1/20": "5%",
                 "19/20": "95%",
+                100: "28rem",
+            },
+            width: {
+                100: "28rem",
             },
         },
         screens: {

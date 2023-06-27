@@ -1,11 +1,12 @@
 import React, { ChangeEvent, useState } from "react";
+import { TextInput } from "@tremor/react";
+import { EnvelopeIcon } from '@heroicons/react/24/solid';
 
 interface InputFormProps {
   closeModal: () => void;
 }
 
 const InputFormModal: React.FC<InputFormProps> = ({ closeModal }) => {
-  const [showModal, setShowModal] = useState(false);
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
   const [email, setEmail] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -94,16 +95,13 @@ const InputFormModal: React.FC<InputFormProps> = ({ closeModal }) => {
                 </div>
               ) : (
                 <>
-                  <div className="p-2">
-                    <p className="text-3xl text-center">Request Creator Key</p>
-                    <form className="mt-4 flex-grow">
-                      <div className="mb-2">
-                        <label htmlFor="email" className="block text-sm font-bold">
-                          Email
-                        </label>
-                        <input id="email" onChange={handleEmailChange} className={`w-full py-1 border ${isValidEmail ? "border-gray-300" : "border-red-500"} border-gray-300 rounded focus:outline-none`} type="email" placeholder="user@domain.com" />
-                      </div>
-                    </form>
+                  <div className="p-2 w-full h-full">
+                    <div className="w-full h-1/6">
+                      <p className="text-3xl text-center">Request Creator Key</p>
+                    </div>
+                    <div className="w-full mt-4 flex items-center h-5/6">
+                      <TextInput icon={EnvelopeIcon} onChange={handleEmailChange} error={!isValidEmail} placeholder="Email" />
+                    </div>
                   </div>
                   <div className="flex justify-end p-2 space-x-2">
                     <button onClick={handleCloseModal} className="h-auto text-red-500 background-transparent font-bold uppercase px-6 py-1 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
