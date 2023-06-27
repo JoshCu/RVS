@@ -1,10 +1,16 @@
 import React, { ChangeEvent, useState } from "react";
 import { TextInput } from "@tremor/react";
 import { EnvelopeIcon, KeyIcon, RocketLaunchIcon } from '@heroicons/react/24/solid';
+import ScoreRequirements from "./ScoreRequirements";
 
 interface InputFormProps {
   closeModal: () => void;
 }
+
+type Requirement = {
+  field: string;
+  type: string;
+};
 
 const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
@@ -15,6 +21,9 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
   const [creatorKey, setCreatorKey] = useState('');
   const [gameName, setGameName] = useState('');
   const [step, setStep] = useState(1);
+  const [allFieldsFilled, setAllFieldsFilled] = useState(false);
+  const [requirements, setRequirements] = useState<{ [key: string]: string }>({});
+
 
   const isStepTwoBlocked = isValidEmail == false || email.length == 0 || creatorKey == '' || gameName == '';
   const isStepThreeBlocked = false;
@@ -40,42 +49,68 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
   };
 
   const handleFormSubmission = async () => {
+    console.log("Hello");
     if (selectedFile) {
       try {
         const reader = new FileReader();
         reader.readAsText(selectedFile);
         reader.onload = async () => { // mark this function as async
+          let jsonData;
           if (typeof reader.result === 'string' && reader.result !== "") {
             try {
-              JSON.parse(reader.result);
+              jsonData = JSON.parse(reader.result);
               setIsValidFile(true);
             } catch (e) {
               setIsValidFile(false);
               alert("Selected file is not a valid JSON file");
+              return;
             }
           }
           
-          const createGameResponse = await fetch('/api/upsertCreator', {
+          const createGameResponse = await fetch('/api/addGame', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'email': email,
+              'creator_key': creatorKey
             },
             body: JSON.stringify({
-              email: email,
+              name: gameName,
+              score_requirements: requirements
             }),
           });
 
-          // if (!creatorResponse.ok) {
-          //   console.error(creatorResponse);
-          //   return;
-          // }
+          if (!createGameResponse.ok) {
+            console.error(createGameResponse);
+            return;
+          }
 
-          // const creatorData = await creatorResponse.json();
-          // const creatorId = creatorData._id;
+          const addScoresResponse = await fetch('/api/addManyScores', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'email': email,
+              'creator_key': creatorKey
+            },
+            body: JSON.stringify(jsonData)
+          })
+
+          if (!addScoresResponse.ok) {
+            console.error(addScoresResponse);
+            return;
+          }
         }
       } catch (error) {
         console.log(error);
       }
+    }
+  }
+
+  const onFieldsFilledChange = (allFieldsFilled: boolean, requirements:{ [key: string]: string }) => {
+    setAllFieldsFilled(allFieldsFilled);
+    if (allFieldsFilled) {
+      setRequirements(requirements);
+      console.log(requirements)
     }
   }
     
@@ -106,7 +141,7 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                 </div>
               ) : (
                 <>
-                  <div className="p-2 w-full h-full">
+                  <div className="p-2 w-full h-5/6">
                     <div className="w-full h-1/6">
                       <p className="text-3xl text-center">Submit New Game</p>
                     </div>
@@ -119,8 +154,8 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                         </div>
                       </form>
                     ) : step == 2 ? (
-                      <div className="h-full w-full overflow-y-auto">
-                        <span>2</span>
+                      <div className="h-5/6 w-full overflow-y-auto">
+                        <ScoreRequirements onFieldsFilledChange={onFieldsFilledChange} />
                       </div>
                     ) : step == 3 ? (
                       <div>
@@ -152,7 +187,7 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                         <button
                           onClick={() => setStep(3)}
                           className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
-                          disabled={isStepThreeBlocked}
+                          disabled={!allFieldsFilled}
                         >
                           Continue
                         </button>
@@ -166,9 +201,8 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                           Back
                         </button>
                         <button
-                          onClick={() => handleFormSubmission}
+                          onClick={handleFormSubmission}
                           className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
-                          disabled={isSubmissionBlocked}
                         >
                           Submit
                         </button>
