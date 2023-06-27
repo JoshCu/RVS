@@ -23,8 +23,6 @@ const ScoreRequirements: React.FC<ScoreRequirementsProps> = ({ onFieldsFilledCha
     const newRequirements = [...requirements];
     newRequirements[index].field = newValue;
     setRequirements(newRequirements);
-
-    console.log(transformRequirementsToObject(newRequirements))
     
     const allFieldsFilled = newRequirements.every(requirement => requirement.field !== "");
     setAllFieldsFilled(allFieldsFilled);
