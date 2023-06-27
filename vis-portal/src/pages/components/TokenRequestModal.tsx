@@ -6,7 +6,7 @@ interface InputFormProps {
   closeModal: () => void;
 }
 
-const InputFormModal: React.FC<InputFormProps> = ({ closeModal }) => {
+const TokenRequestModal: React.FC<InputFormProps> = ({ closeModal }) => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
   const [email, setEmail] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -127,4 +127,4 @@ const InputFormModal: React.FC<InputFormProps> = ({ closeModal }) => {
   )
 };
 
-export default InputFormModal;
+export default TokenRequestModal;

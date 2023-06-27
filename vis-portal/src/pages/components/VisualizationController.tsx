@@ -8,7 +8,7 @@ import {setPlayers} from "@/store/slices/playerSlice";
 import {selectGame, selectScores, selectSelectedGameId, selectPlayers} from '../../store/store';
 import {Game} from '../api/games';
 
-const Form = () => {
+const VisualizationController = () => {
   const [visualizationType, setVisualizationType] = useState("");
   const [submit, setSubmit] = useState(false);
   const [field1, setField1] = useState("");
@@ -349,4 +349,4 @@ const Form = () => {
   )
 }
 
-export default Form;
+export default VisualizationController;

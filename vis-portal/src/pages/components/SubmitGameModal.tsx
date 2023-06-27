@@ -6,7 +6,7 @@ interface InputFormProps {
   closeModal: () => void;
 }
 
-const InputFormModal: React.FC<InputFormProps> = ({ closeModal }) => {
+const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
   const [email, setEmail] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -187,4 +187,4 @@ const InputFormModal: React.FC<InputFormProps> = ({ closeModal }) => {
   )
 };
 
-export default InputFormModal;
+export default SubmitGameModal;
