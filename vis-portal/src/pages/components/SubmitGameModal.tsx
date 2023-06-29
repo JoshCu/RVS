@@ -1,9 +1,12 @@
 import React, { ChangeEvent, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { selectGame } from "@/store/store";
 import { TextInput } from "@tremor/react";
 import { EnvelopeIcon, KeyIcon, RocketLaunchIcon } from '@heroicons/react/24/solid';
 import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import ScoreRequirements from "./ScoreRequirements";
 import Link from "next/link";
+import { setGames } from "@/store/slices/gameSlice";
 
 interface InputFormProps {
   closeModal: () => void;
@@ -26,11 +29,13 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
   const [scoreSubmissionMessage, setScoreSubmissionMessage] = useState('');
   const [problematicScore, setProblematicScore] = useState([]);
 
-
   const isStepTwoBlocked = isValidEmail == false || email.length == 0 || creatorKey == '' || gameName == '';
   const isSubmissionBlocked = !selectedFile || !isValidFile
 
   const emailRegex = /^[a-zA-Z]{2,3}\d+@uakron\.edu$/;
+
+  const dispatch = useDispatch();
+  const games = useSelector(selectGame);
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -54,27 +59,38 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
     setGameCreationError(false);
     setGameCreationMessage('');
     
-    const createGameResponse = await fetch('/api/addGame', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'email': email,
-        'creator_key': creatorKey
-      },
-      body: JSON.stringify({
-        name: gameName,
-        score_requirements: requirements
-      }),
-    });
+    try {
+      const createGameResponse = await fetch('/api/addGame', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'email': email,
+          'creator_key': creatorKey
+        },
+        body: JSON.stringify({
+          name: gameName,
+          score_requirements: requirements
+        }),
+      });
 
-    if (!createGameResponse.ok) {
+      const res = await createGameResponse.json();
+
+      if (!createGameResponse.ok) {
+        setGameCreationError(true);
+        setGameCreationStatus(createGameResponse.status);
+        setGameCreationMessage(res.message);
+      } else {
+        const newGame = res.game;
+        const updatedGames = [...games, newGame];
+        dispatch(setGames(updatedGames));
+      }
+
+      setStep(3);
+    } catch (error) {
+      console.error(error);
       setGameCreationError(true);
-      setGameCreationStatus(createGameResponse.status);
-      const error = await createGameResponse.json();
-      setGameCreationMessage(error.message);
+      setGameCreationMessage("An unexpected error occurred. Please try again later.");
     }
-
-    setStep(3);
   }
 
   const handleScoreSubmission = async () => {
@@ -82,7 +98,7 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
       try {
         const reader = new FileReader();
         reader.readAsText(selectedFile);
-        reader.onload = async () => { // mark this function as async
+        reader.onload = async () => {
           let jsonData;
           if (typeof reader.result === 'string' && reader.result !== "") {
             try {
@@ -117,7 +133,10 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
           setStep(5);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        setScoreSubmissionError(true);
+        setScoreSubmissionMessage("An unexpected error occurred. Please try again later");
+        setSelectedFile(null);
       }
     }
   }
@@ -126,7 +145,6 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
     setAllFieldsFilled(allFieldsFilled);
     if (allFieldsFilled) {
       setRequirements(requirements);
-      console.log(requirements)
     }
   }
     
@@ -208,41 +226,45 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                         </div>
                         <div className="w-full h-3/5 overflow-y-auto border">
                           <p><strong className="text-red-500">Error:</strong> {scoreSubmissionMessage}</p>
-                          <strong className="text-red-500">Problem:</strong>
-                          <div>
-                            {"{"}
-                            <div className="ml-4">
-                              {Object.keys(problematicScore).map((key: string) => {
-                                const value = (problematicScore as { [key: string]: any })[key];
-                                if (typeof value === 'object' && value !== null) {
-                                  // If the value is an object, render its properties as well.
-                                  return (
-                                    <div key={key}>
-                                      <span className="text-blue-600">{key}</span>: {"{"}
-                                      <div className="ml-4">
-                                        {Object.keys(value).map(subKey => (
-                                          <div key={subKey}>
-                                            <span className="text-blue-600">{subKey}</span>:{" "}
-                                            <span className="text-orange-500">{JSON.stringify(value[subKey])}</span>
+                          {problematicScore && Object.keys(problematicScore).length > 0 ? (
+                            <div>
+                              <strong className="text-red-500">Problem:</strong>
+                              <div>
+                                {"{"}
+                                <div className="ml-4">
+                                  {Object.keys(problematicScore).map((key: string) => {
+                                    const value = (problematicScore as { [key: string]: any })[key];
+                                    if (typeof value === 'object' && value !== null) {
+                                      // If the value is an object, render its properties as well.
+                                      return (
+                                        <div key={key}>
+                                          <span className="text-blue-600">{key}</span>: {"{"}
+                                          <div className="ml-4">
+                                            {Object.keys(value).map(subKey => (
+                                              <div key={subKey}>
+                                                <span className="text-blue-600">{subKey}</span>:{" "}
+                                                <span className="text-orange-500">{JSON.stringify(value[subKey])}</span>
+                                              </div>
+                                            ))}
                                           </div>
-                                        ))}
-                                      </div>
-                                      {"}"}
-                                    </div>
-                                  );
-                                }
+                                          {"}"}
+                                        </div>
+                                      );
+                                    }
 
-                                // If the value is not an object, just render it directly.
-                                return (
-                                  <div key={key}>
-                                    <span className="text-blue-600">{key}</span>:{" "}
-                                    <span className="text-orange-500">{JSON.stringify(value)}</span>
-                                  </div>
-                                );
-                              })}
+                                    // If the value is not an object, just render it directly.
+                                    return (
+                                      <div key={key}>
+                                        <span className="text-blue-600">{key}</span>:{" "}
+                                        <span className="text-orange-500">{JSON.stringify(value)}</span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                                {"}"}
+                              </div>
                             </div>
-                            {"}"}
-                          </div>
+                          ) : null}
                         </div>
                       </div>
                     ) : (
@@ -345,13 +367,6 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                       Submit
                     </button>
                   </div>
-                ) : step == 5 ? (
-                  <button
-                    onClick={() => setStep(4)}
-                    className="bg-green-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
-                  >
-                    Back
-                  </button>
                 ) : null}
               </div>
             </div>

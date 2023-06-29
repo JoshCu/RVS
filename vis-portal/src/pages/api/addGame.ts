@@ -50,7 +50,11 @@ export default async function handler(
       .collection("games")
       .insertOne(game)
 
-    return res.status(200).json({ message: "Game was successfully added", _id: result.insertedId });
+    game._id = result.insertedId;
+    game.score_requirements.player_name = "string";
+    const { creator_id, ...gameWithoutCreatorId } = game;
+
+    return res.status(200).json({ message: "Game was successfully added", game: gameWithoutCreatorId });
   } catch (e) {
     console.error(e);
     if (e instanceof MongoError && e.code === 11000) {
