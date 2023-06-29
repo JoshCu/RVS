@@ -54,7 +54,7 @@ export default async function handler(
   } catch (e) {
     console.error(e);
     if (e instanceof MongoError && e.code === 11000) {
-      return res.status(409).json({ message: "Game name already exists" });
+      return res.status(409).json({ message: "Game name already exists. If you are the creator of this game, please disregard this message and begin adding scores." });
     } else {
       return res.status(500).json({ message: "An unexpected error occurred when adding the game"});
     }
