@@ -11,8 +11,8 @@ interface ExpandableTextProps {
 
 const ExpandableText: React.FC<ExpandableTextProps> = ({ onClick, isOpen, endpointName, content, children }) => {
   return (
-    <div onClick={onClick} className="bg-gray-100 p-1 hover:cursor-pointer">
-      <div className="flex justify-between">
+    <div className="bg-gray-100 p-1">
+      <div onClick={onClick} className="flex justify-between hover:cursor-pointer">
         <div className="flex items-center space-x-2">
           <div className="bg-indigo-500 p-1 w-auto inline-block shadow-lg">
             <p className="text-white ">POST</p>

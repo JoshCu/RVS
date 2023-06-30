@@ -12,11 +12,12 @@ const APIDocs = () => {
   return (
     <div>
       <h1 className="text-center text-3xl">API Documentation</h1>
-      <div className="flex justify-center mb-2 mt-10">
+      <div className="flex justify-center mb-2 mt-10 flex-col">
         <div className="w-full flex items-center justify-center">
           <ExclamationTriangleIcon className="h-5 w-5 stroke-red-500" />
           <p className="text-md text-red-500"><strong>Attention:</strong> Prior to using this API, please make sure all of the metrics for your game are final. Once a game is added it cannot be removed and games with the same name cannot coexist</p>
         </div>
+        <p className="text-center text-md font-bold">Click to expand:</p>
       </div>
       <div className="w-1/2 m-auto">
         <ExpandableText
@@ -27,7 +28,7 @@ const APIDocs = () => {
           <div className="w-full h-full px-5">
             <ul className="list-disc list-inside">
               <li>Adds a game to the database (must be done before any subsequent endpoint can be used)</li>
-              <li>In the header of the request, include your <strong>email</strong> and <strong>creator token</strong></li>
+              <li>In the header of the request, include your <strong>email</strong> and <strong>creator_key</strong></li>
               <li>The body of the request should include 'name' and 'score_requirements'</li>
               <li>'score_requirements' must be an object containing all the fields you wish to show along with their data types</li>
               <li>Valid data types include <strong>boolean</strong>, <strong>number</strong>, and <strong>string</strong></li>
@@ -58,7 +59,7 @@ const APIDocs = () => {
           <div className="w-full h-full px-5">
             <ul className="list-disc list-inside">
               <li>Adds a single score to the corresponding game</li>
-              <li>In the header of the request, include your <strong>email</strong> and <strong>creator token</strong></li>
+              <li>In the header of the request, include your <strong>email</strong> and <strong>creator_key</strong></li>
               <li>The body of the request should include 'game', 'player_name', 'player_id', and 'score' which includes each metric specified when the game was created</li>
               <li><strong>Note:</strong> only the game's creator is authorized to add scores for their game</li>
               <li>Sample request body:</li>
@@ -89,7 +90,7 @@ const APIDocs = () => {
           <div className="w-full h-full px-5">
             <ul className="list-disc list-inside">
               <li>Adds a list of scores to the corresponding game</li>
-              <li>In the header of the request, include your <strong>email</strong> and <strong>creator token</strong></li>
+              <li>In the header of the request, include your <strong>email</strong> and <strong>creator_key</strong></li>
               <li>The body of the request should include 'game' and 'scores' which includes an array of scores which follow the format used for adding a single score (minus the 'game' field)</li>
               <li><strong>Note:</strong> only the game's creator is authorized to add scores for their game</li>
               <li>Sample request body:</li>
