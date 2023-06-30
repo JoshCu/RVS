@@ -1,14 +1,14 @@
-import {BarChart, DonutChart, Dropdown, DropdownItem, Text, Title} from "@tremor/react";
+import {BarChart, DonutChart, Dropdown, DropdownItem, Text, Title, MultiSelectBox, MultiSelectBoxItem} from "@tremor/react";
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {CartesianGrid, Legend, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from "recharts";
 import {setGames, setSelectedGameId} from '../../store/slices/gameSlice';
 import {setScores} from '../../store/slices/scoreSlice';
-import {setGrades} from '../../store/slices/testSlice';
-import {selectGame, selectGrade, selectScores, selectSelectedGameId} from '../../store/store';
-import {Game} from '../api/gameNames';
+import {setPlayers} from "@/store/slices/playerSlice";
+import {selectGame, selectScores, selectSelectedGameId, selectPlayers} from '../../store/store';
+import {Game} from '../api/games';
 
-const Form = () => {
+const VisualizationController = () => {
   const [visualizationType, setVisualizationType] = useState("");
   const [submit, setSubmit] = useState(false);
   const [field1, setField1] = useState("");
@@ -20,58 +20,79 @@ const Form = () => {
 
   const visualizations = ['Pie Chart', 'Bar Chart', 'Scatter Chart'];
 
-  const grades = useSelector(selectGrade);
   const games = useSelector(selectGame);
   const selectedGameId = useSelector(selectSelectedGameId);
   const gameScores = useSelector(selectScores);
+  const [filteredScores, setFilteredScores] = useState(gameScores);
+  const players = useSelector(selectPlayers);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    async function fetchGrades() {
-      const response = await fetch('/api/testGrade');
-      const json = await response.json();
-      dispatch(setGrades(json));
-    }
-
     async function fetchGames() {
-      const response = await fetch('/api/gameNames');
+      const response = await fetch('/api/games');
       const json = await response.json();
       dispatch(setGames(json));
     }
 
-    fetchGrades();
     fetchGames();
 
   }, [dispatch]);
 
-  if (!grades) {
-    return <div>Loading...</div>;
-  }
-
   const handleGameTitleChange = async (selection: Game) => {
     if (selection._id !== selectedGameId) {
       dispatch(setSelectedGameId(selection._id));
-      const response = await fetch(`/api/gameScores?game_id=${selection._id}`);
-      const json = await response.json();
-      dispatch(setScores(json));
+
+      try {
+        const gameResponse = await fetch(`/api/gameInfo?game_id=${selection._id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          }
+        });
+
+        if (!gameResponse.ok) {
+          console.log(gameResponse);
+        }
+
+        const gameJson = await gameResponse.json();
+        dispatch(setScores(gameJson.scores));
+        dispatch(setPlayers(gameJson.players));
+        setFilteredScores(gameJson.scores);
+
+        const game = games.find(g => g._id === selection._id);
+        const categoricalVars = [];
+        const continuousVars = [];
+        if (game) {
+          for (var [key, value] of Object.entries(game.score_requirements)) {
+            if (value == 'string' || value == 'boolean') {
+              categoricalVars.push(key);
+            } else {
+              continuousVars.push(key);
+            }
+          }
+        }
+
+        setCategoricalScores(categoricalVars);
+        setContinuousScores(continuousVars);
+        setParameter1("");
+        setParameter2("");
+        setSubmit(false);
+        setVisualizationType("");
+      } catch (error) {
+        console.log(error);
+      }
     }
-    setCategoricalScores([]);
-    setContinuousScores([]);
-    setParameter1("");
-    setParameter2("");
-    setSubmit(false);
-    setVisualizationType("");
   }
 
   const handleVisualizationTypeChange = async (selection: string) => {
     if (selection !== visualizationType) {
-      setCategoricalScores([]);
-      setContinuousScores([]);
       setParameter1("");
       setParameter2("");
       setSubmit(false);
       setVisualizationType(selection);
+      setFilteredScores(gameScores);
 
       switch (selection) {
         case 'Pie Chart':
@@ -87,28 +108,20 @@ const Form = () => {
           setField2("Y-Axis");
           break;
       }
-
-      const categoricalVars = [];
-      const continuousVars = [];
-
-      // Iterate over the object's properties
-      for (const [key, value] of Object.entries(gameScores[0])) {
-        console.log(typeof (value))
-        // Check if the value is a number
-        if (typeof value === 'number') {
-          continuousVars.push(key);
-        } else {
-          categoricalVars.push(key);
-        }
-      }
-
-      setCategoricalScores(categoricalVars);
-      setContinuousScores(continuousVars);
-      console.log(continuousScores)
     } else {
       setSubmit(true);
     }
   };
+
+  const filterScoresByPlayerId = (playerIds: string[]) => {
+    var filteredScores = [];
+    if (playerIds.length > 0) {
+      filteredScores = gameScores.filter(score => playerIds.includes(score.player_id));
+    } else {
+      filteredScores = gameScores;
+    }
+    setFilteredScores(filteredScores);
+  }
 
   const handleOnSubmit = () => {
     setSubmit(true);
@@ -162,17 +175,33 @@ const Form = () => {
             </Dropdown>
           </div>
           {visualizationType === "Pie Chart" && (
-            <div className="mb-4">
-              <Text className="text-black font-bold text-base">{field1}</Text>
-              <Dropdown
-                className="mt-2"
-                onValueChange={(e) => handleFieldOneChange(e)}
-                placeholder={`Select a parameter for ${field1}`}
-              >
-                {continuousScores.map((continuousScore, index) => (
-                  <DropdownItem key={index} value={continuousScore.toString()} text={continuousScore.toString()} />
-                ))}
-              </Dropdown>
+            <div>
+              <div className="mb-4">
+                <Text className="text-black font-bold text-base">{field1}</Text>
+                <Dropdown
+                  className="mt-2"
+                  onValueChange={(e) => handleFieldOneChange(e)}
+                  placeholder={`Select a parameter for ${field1}`}
+                >
+                  {continuousScores.map((continuousScore, index) => (
+                    <DropdownItem key={index} value={continuousScore.toString()} text={continuousScore.toString()} />
+                  ))}
+                </Dropdown>
+              </div>
+              <div className="mb-4">
+                <Text className="block font-bold text-black text-base mb-2">Filter By Players</Text>
+                <MultiSelectBox
+                  placeholder="All players"
+                  onValueChange={(e) => {
+                    const playerIds = e.map(value => JSON.parse(value).player_id);
+                    filterScoresByPlayerId(playerIds);
+                  }}
+                >
+                  {players.map((player, index) => (
+                    <MultiSelectBoxItem key={index} value={JSON.stringify(player)} text={player.player_name + ' (' + player.player_id + ')'} />
+                  ))}
+                </MultiSelectBox>
+              </div>
             </div>
           )}
           {visualizationType === "Bar Chart" && (
@@ -189,6 +218,22 @@ const Form = () => {
                   ))}
                 </Dropdown>
               </div>
+              {parameter1 === "player_name" && (
+                <div className="mb-4">
+                  <Text className="block font-bold text-black text-base mb-2">Filter By Players</Text>
+                  <MultiSelectBox
+                    placeholder="All players"
+                    onValueChange={(e) => {
+                      const playerIds = e.map(value => JSON.parse(value).player_id);
+                      filterScoresByPlayerId(playerIds);
+                    }}
+                  >
+                    {players.map((player, index) => (
+                      <MultiSelectBoxItem key={index} value={JSON.stringify(player)} text={player.player_name + ' (' + player.player_id + ')'} />
+                    ))}
+                  </MultiSelectBox>
+                </div>
+              )}
               <div className="mb-4">
                 <Text className="text-black font-bold text-base">{field2}</Text>
                 <Dropdown
@@ -251,7 +296,7 @@ const Form = () => {
                 <Title mt-='15px'>{parameter1} grouped by player_name</Title>
                 <DonutChart
                   className="mt-6 h-2/3 w-2/3 m-auto"
-                  data={gameScores}
+                  data={filteredScores}
                   category={parameter1}
                   index="player_name"
                 />
@@ -262,7 +307,7 @@ const Form = () => {
                 <Title mt-='15px'>{parameter2} by {parameter1}</Title>
                 <BarChart
                   className="mt-6 h-2/3 w-full m-auto"
-                  data={gameScores}
+                  data={filteredScores}
                   index={parameter1}
                   categories={[parameter2]}
                   colors={["blue"]}
@@ -304,4 +349,4 @@ const Form = () => {
   )
 }
 
-export default Form;
+export default VisualizationController;
