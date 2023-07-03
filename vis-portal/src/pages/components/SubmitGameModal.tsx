@@ -12,6 +12,11 @@ interface InputFormProps {
   closeModal: () => void;
 }
 
+type Requirement = {
+  field: string;
+  type: string;
+};
+
 const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
   const [email, setEmail] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -21,13 +26,17 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
   const [gameName, setGameName] = useState('');
   const [step, setStep] = useState(1);
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
-  const [requirements, setRequirements] = useState<{ [key: string]: string }>({});
+  // const [requirements, setRequirements] = useState<{ [key: string]: string }>({});
   const [gameCreationError, setGameCreationError] = useState(false);
   const [gameCreationMessage, setGameCreationMessage] = useState('');
   const [gameCreationStatus, setGameCreationStatus] = useState(0);
   const [scoreSubmissionError, setScoreSubmissionError] = useState(false);
   const [scoreSubmissionMessage, setScoreSubmissionMessage] = useState('');
   const [problematicScore, setProblematicScore] = useState([]);
+  const [requirements, setRequirements] = useState<Requirement[]>([
+    { field: '', type: 'number' },
+    { field: '', type: 'number' }
+  ]);
 
   const isStepTwoBlocked = isValidEmail == false || email.length == 0 || creatorKey == '' || gameName == '';
   const isSubmissionBlocked = !selectedFile || !isValidFile
@@ -55,6 +64,14 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
     }
   };
 
+  // Grants us the final result in typical JSON format { key: value, key: value, etc... }
+  const transformRequirementsToObject = (requirements: Requirement[]): { [key: string]: string } => {
+    return requirements.reduce((obj: { [key: string]: string }, requirement) => {
+      obj[requirement.field] = requirement.type;
+      return obj;
+    }, {});
+  };
+
   const handleGameCreation = async () => {
     setGameCreationError(false);
     setGameCreationMessage('');
@@ -69,7 +86,7 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
         },
         body: JSON.stringify({
           name: gameName,
-          score_requirements: requirements
+          score_requirements: transformRequirementsToObject(requirements)
         }),
       });
 
@@ -95,6 +112,9 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
 
   const handleScoreSubmission = async () => {
     if (selectedFile) {
+      setScoreSubmissionError(false);
+      setScoreSubmissionMessage('');
+      setProblematicScore([]);
       try {
         const reader = new FileReader();
         reader.readAsText(selectedFile);
@@ -141,11 +161,9 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
     }
   }
 
-  const onFieldsFilledChange = (allFieldsFilled: boolean, requirements:{ [key: string]: string }) => {
-    setAllFieldsFilled(allFieldsFilled);
-    if (allFieldsFilled) {
-      setRequirements(requirements);
-    }
+  const handleRequirementsChange = (requirements: Requirement[]) => {
+    setRequirements(requirements);
+    setAllFieldsFilled(requirements.every(req => req.field !== ""));
   }
     
   const handleCloseModal = () => {
@@ -175,7 +193,10 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                   </form>
                 ) : step == 2 ? (
                   <div className="h-5/6 w-full overflow-y-auto">
-                    <ScoreRequirements onFieldsFilledChange={onFieldsFilledChange} />
+                    <ScoreRequirements
+                      requirements={requirements}
+                      onRequirementsChange={handleRequirementsChange}
+                    />
                   </div>
                 ) : step == 3 ? (
                   <div className="h-5/6 w-full">
@@ -283,7 +304,7 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                 {step == 1 ? (
                   <button
                     onClick={() => setStep(2)}
-                    className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
+                    className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:bg-indigo-600 outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
                     disabled={isStepTwoBlocked}
                   >
                     Continue
@@ -292,13 +313,13 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                   <div>
                     <button
                       onClick={() => setStep(1)}
-                      className="bg-green-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
+                      className="bg-green-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:bg-green-600 outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
                     >
                       Back
                     </button>
                     <button
                       onClick={handleGameCreation}
-                      className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
+                      className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:bg-indigo-600 outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
                       disabled={!allFieldsFilled}
                     >
                       Continue
@@ -312,13 +333,13 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                           <div>
                             <button
                               onClick={() => setStep(1)}
-                              className="bg-green-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
+                              className="bg-green-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:bg-green-600 outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
                             >
                               Back
                             </button>
                             <button
                               onClick={() => setStep(4)}
-                              className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
+                              className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:bg-indigo-600 outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
                               disabled={!allFieldsFilled}
                             >
                               Continue
@@ -327,7 +348,7 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                         ) : (
                           <button
                             onClick={() => setStep(2)}
-                            className="bg-green-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
+                            className="bg-green-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:bg-green-600 outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
                           >
                             Back
                           </button>
@@ -337,14 +358,14 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                       <div>
                         <Link href="/apiDocs">
                           <button
-                            className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                            className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:bg-indigo-600 outline-none focus:outline-none mr-1 mb-1"
                           >
                             API Info
                           </button>
                         </Link>
                         <button
                           onClick={() => setStep(4)}
-                          className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                          className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:bg-indigo-600 outline-none focus:outline-none mr-1 mb-1"
                         >
                           Continue
                         </button>
@@ -355,18 +376,25 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                   <div>
                     <button
                       onClick={() => setStep(3)}
-                      className="bg-green-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
+                      className="bg-green-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:bg-green-600 outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
                     >
                       Back
                     </button>
                     <button
                       onClick={handleScoreSubmission}
-                      className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
+                      className="bg-indigo-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:bg-indigo-600 outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
                       disabled={isSubmissionBlocked}
                     >
                       Submit
                     </button>
                   </div>
+                ) : step == 5 && scoreSubmissionError ? (
+                  <button
+                    onClick={() => setStep(4)}
+                    className="bg-green-500 text-white font-bold uppercase text-sm px-6 py-2 rounded shadow hover:bg-green-600 outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 disabled:bg-gray-400"
+                  >
+                    Back
+                  </button>
                 ) : null}
               </div>
             </div>
