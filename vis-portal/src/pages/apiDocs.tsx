@@ -11,7 +11,10 @@ const APIDocs = () => {
 
   return (
     <div>
-      <h1 className="text-center text-3xl">API Documentation</h1>
+      <div className="w-full grid grid-cols-3">
+        <h1 className="text-center text-3xl col-start-2">API Documentation</h1>
+        <a href="/" className="mr-1 mt-1 py-2 px-4 bg-white rounded hover:text-indigo-500 text-right">Home</a>
+      </div>
       <div className="flex justify-center mb-2 mt-10 flex-col">
         <div className="w-full flex items-center justify-center">
           <ExclamationTriangleIcon className="h-5 w-5 stroke-red-500" />
@@ -31,7 +34,7 @@ const APIDocs = () => {
               <li>In the header of the request, include your <strong>email</strong> and <strong>creator_key</strong></li>
               <li>The body of the request should include 'name' and 'score_requirements'</li>
               <li>'score_requirements' must be an object containing all the fields you wish to show along with their data types</li>
-              <li>Valid data types include <strong>boolean</strong>, <strong>number</strong>, and <strong>string</strong></li>
+              <li>Valid data types include <strong>number</strong>, and <strong>string</strong></li>
               <li>Sample request body:</li>
             </ul>
             <pre className="flex justify-center">
