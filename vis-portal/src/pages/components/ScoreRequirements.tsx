@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { TextInput, SelectBox, SelectBoxItem, Button } from "@tremor/react";
+import { TextInput, SelectBox, SelectBoxItem } from "@tremor/react";
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/solid';
-import { transform } from "typescript";
 
 interface ScoreRequirementsProps {
   onRequirementsChange: (requirements: Requirement[]) => void
