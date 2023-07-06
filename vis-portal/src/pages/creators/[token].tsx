@@ -89,7 +89,7 @@ const VerificationHandler = () => {
                 Please keep your token secure and follow these guidelines:
               </p>
               <ul className="list-disc list-inside mb-4">
-                <li>We won't display your token again, so make sure to store it securely.</li>
+                <li>We won&apos;t display your token again, so make sure to store it securely.</li>
                 <li>Do not share your token with others.</li>
               </ul>
             </div>

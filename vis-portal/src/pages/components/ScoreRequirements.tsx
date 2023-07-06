@@ -12,7 +12,7 @@ type Requirement = {
   type: string;
 };
 
-const ScoreRequirements: React.FC<ScoreRequirementsProps> = ({ onRequirementsChange, requirements }) => {
+const ScoreRequirements: React.FC<ScoreRequirementsProps> = ({ onRequirementsChange, requirements = [] }) => {
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
 
   const handleFieldChange = (index: number, newValue: string) => {

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import clientPromise from '../../../lib/mongo/mongodb';
+import clientPromise from '../lib/mongo/mongodb';
 
 export default async function authenticationHandler(
   req: NextApiRequest,
@@ -29,7 +29,7 @@ export default async function authenticationHandler(
         return false;
     }
 
-    const bcrypt = require('bcrypt');
+    const bcrypt = require('bcryptjs');
     const isMatch = await bcrypt.compare(creatorKey, creator.creator_key);
     const currentDate = new Date();
 

@@ -26,7 +26,7 @@ export default async function handler(
   }
 
   const creatorKey = crypto.randomBytes(32).toString('hex');
-  const bcrypt = require('bcrypt');
+  const bcrypt = require('bcryptjs');
   const hashedCreatorKey = await bcrypt.hash(creatorKey, 10);
 
   const expiryDate = new Date();

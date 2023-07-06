@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongo/mongodb';
-import authenticationHandler from '../authentication/authenticationHandler';
-import requestValidator from '../authentication/requestValidator';
+import authenticationHandler from '../../../utils/authenticationHandler';
+import requestValidator from '../../../utils/requestValidator';
 import { ObjectId } from 'mongodb';
 
 export default async function handler(
