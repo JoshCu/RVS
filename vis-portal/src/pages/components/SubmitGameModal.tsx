@@ -24,7 +24,7 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
   const [isValidFile, setIsValidFile] = useState(true);
   const [creatorKey, setCreatorKey] = useState('');
   const [gameName, setGameName] = useState('');
-  const [step, setStep] = useState(4);
+  const [step, setStep] = useState(1);
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
   const [gameCreationError, setGameCreationError] = useState(false);
   const [gameCreationMessage, setGameCreationMessage] = useState('');
