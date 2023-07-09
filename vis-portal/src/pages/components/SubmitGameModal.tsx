@@ -238,10 +238,6 @@ const SubmitGameModal: React.FC<InputFormProps> = ({ closeModal }) => {
                         <label htmlFor="scores-input" className="text-sm font-bold">Scores (JSON files only)</label>
                         <input id="scores-input" onChange={handleJSONUpload} className={`block w-full py-1 text-sm border ${isValidFile ? "border-gray-300" : "border-red-500"} rounded-md cursor-pointer bg-white`} type="file" accept=".json" />
                       </div>
-                      <div>
-                        <strong className="text-sm">Please Note:</strong>
-                        <p className="text-sm">If you are trying to correct a file error from the next step, reset the file selector by choosing a different file from your system and then immediately change it back to the desired file before submitting.</p>
-                      </div>
                     </div>
                   </div>
                 ) : step == 5 ? (
