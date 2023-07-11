@@ -1,67 +1,48 @@
 import React, { useState } from "react";
-import { TextInput, SelectBox, SelectBoxItem, Button } from "@tremor/react";
+import { TextInput, SelectBox, SelectBoxItem } from "@tremor/react";
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/solid';
-import { transform } from "typescript";
+
+interface ScoreRequirementsProps {
+  onRequirementsChange: (requirements: Requirement[]) => void
+  requirements: Requirement[]
+}
 
 type Requirement = {
   field: string;
   type: string;
 };
 
-interface ScoreRequirementsProps {
-  onFieldsFilledChange: (allFieldsFilled: boolean, requirements: { [key: string]: string }) => void;
-}
-
-const ScoreRequirements: React.FC<ScoreRequirementsProps> = ({ onFieldsFilledChange }) => {
-  const [requirements, setRequirements] = useState<Requirement[]>([
-    { field: '', type: 'number' },
-    { field: '', type: 'number' }
-  ]);
+const ScoreRequirements: React.FC<ScoreRequirementsProps> = ({ onRequirementsChange, requirements = [] }) => {
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
 
   const handleFieldChange = (index: number, newValue: string) => {
     const newRequirements = [...requirements];
     newRequirements[index].field = newValue;
-    setRequirements(newRequirements);
     
     const allFieldsFilled = newRequirements.every(requirement => requirement.field !== "");
     setAllFieldsFilled(allFieldsFilled);
 
-    onFieldsFilledChange(allFieldsFilled, transformRequirementsToObject(newRequirements));
+    onRequirementsChange(newRequirements);
   };
 
   const handleTypeChange = (index: number, newValue: string) => {
     const newRequirements = [...requirements];
     newRequirements[index].type = newValue;
-    setRequirements(newRequirements);
 
-    onFieldsFilledChange(allFieldsFilled, transformRequirementsToObject(newRequirements));
+    onRequirementsChange(newRequirements);
   };
 
   const addRequirement = () => {
     const newRequirements = [...requirements, { field: '', type: 'number' }];
-    setRequirements(newRequirements);
-    setAllFieldsFilled(false);
     
-    onFieldsFilledChange(false, transformRequirementsToObject(newRequirements));
+    onRequirementsChange(newRequirements);
   };
 
   const removeRequirement = () => {
     if (requirements.length > 2) {
       const newRequirements = requirements.slice(0, requirements.length - 1);
-      setRequirements(newRequirements);
-
-      const allFieldsFilled = newRequirements.every(requirement => requirement.field !== "");
-      onFieldsFilledChange(allFieldsFilled, transformRequirementsToObject(newRequirements));
+      onRequirementsChange(newRequirements);
     }
-  };
-
-  // Grants us the final result in typical JSON format { key: value, key: value, etc... }
-  const transformRequirementsToObject = (requirements: Requirement[]): { [key: string]: string } => {
-    return requirements.reduce((obj: { [key: string]: string }, requirement) => {
-      obj[requirement.field] = requirement.type;
-      return obj;
-    }, {});
   };
 
   return (

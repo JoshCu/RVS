@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongo/mongodb';
 import { MongoError } from 'mongodb';
-import authenticationHandler from '../authentication/authenticationHandler';
-import requestValidator from '../authentication/requestValidator';
+import authenticationHandler from '../../../utils/authenticationHandler';
+import requestValidator from '../../../utils/requestValidator';
 
 export default async function handler(
   req: NextApiRequest,
@@ -29,10 +29,10 @@ export default async function handler(
 
     const scoreRequirements = game.score_requirements;
     if (Object.keys(scoreRequirements).length < 2) {
-      return res.status(400).json({ message: "Please provide at least two scoring parameters for visualization" });
+      return res.status(400).json({ message: "Please provide at least two distinct scoring parameters for visualization" });
     }
     
-    const allowedTypes = ['string', 'number', 'boolean'];
+    const allowedTypes = ['string', 'number'];
     for (let key of Object.keys(scoreRequirements)) {
       const type = scoreRequirements[key];
       if (typeof type !== "string" || !allowedTypes.includes(type)) {
